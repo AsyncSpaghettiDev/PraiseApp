@@ -6,8 +6,8 @@
     "praise-app-web"
   ],
   "scripts": {
-    "dev:web": "yarn --filter praise-app-web dev",
-    "dev:api": "yarn --filter praise-app-api dev",
+    "dev:web": "pnpm --filter praise-app-web dev",
+    "dev:api": "pnpm --filter praise-app-backend start:dev",
     "lint": "eslint . --fix --ext ts,tsx,js,jsx --report-unused-disable-directives --max-warnings 0",
     "prepare": "husky"
   },
