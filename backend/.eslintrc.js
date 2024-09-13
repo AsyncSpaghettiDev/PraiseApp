@@ -22,6 +22,7 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'no-extra-semi': 'error',
-    "semi": [ "error", "never" ]
+    "semi": [ "error", "never" ],
+    'no-useless-constructor': 'off',
   },
 };
