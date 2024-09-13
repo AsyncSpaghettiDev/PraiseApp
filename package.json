@@ -3,8 +3,14 @@
   "license": "UNLICENSED",
   "workspaces": [
     "praise-app-backend",
-    "praise-app-frontend"
+    "praise-app-web"
   ],
+  "scripts": {
+    "dev:web": "yarn --filter praise-app-web dev",
+    "dev:api": "yarn --filter praise-app-api dev",
+    "lint": "eslint . --fix --ext ts,tsx,js,jsx --report-unused-disable-directives --max-warnings 0",
+    "prepare": "husky"
+  },
   "devDependencies": {
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
@@ -21,10 +27,6 @@
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0"
-  },
-  "scripts": {
-    "lint": "eslint . --fix --ext ts,tsx,js,jsx --report-unused-disable-directives --max-warnings 0",
-    "prepare": "husky"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": "eslint --fix --report-unused-disable-directives --max-warnings 0",
