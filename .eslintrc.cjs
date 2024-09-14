@@ -5,7 +5,7 @@ module.exports = {
     jest: true,
   },
   extends: ['plugin:@typescript-eslint/recommended', 'standard'],
-  ignorePatterns: ['.eslintrc.cjs'],
+  ignorePatterns: ['.eslintrc.cjs', 'dist'],
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint/eslint-plugin'],
   rules: {
@@ -17,4 +17,12 @@ module.exports = {
     semi: ['error', 'never'],
     'no-useless-constructor': 'off',
   },
+  // overrides: [
+  //   {
+  //     files: ['**/*.dto.ts'],
+  //     rules: {
+  //       indent: 'off',
+  //     },
+  //   },
+  // ],
 }
