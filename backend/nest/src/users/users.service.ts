@@ -1,33 +1,42 @@
 import { Injectable } from '@nestjs/common'
-
-export type User = {
-  id: number
-  name: string
-  username: string
-  password: string
-  permissions?: string[]
-}
+import { InjectRepository } from '@nestjs/typeorm'
+import { User } from '../entities'
+import { Repository } from 'typeorm'
+import { CreateUserDTO, UpdateUserDTO } from './user.dto'
 
 @Injectable()
 export class UsersService {
-  private readonly users: User[] = [
-    {
-      id: 1,
-      name: 'John Doe',
-      username: 'john_doe',
-      password: 'pass',
-      permissions: ['songs:read', 'songs:write', 'playlists:read', 'playlists:write']
-    },
-    {
-      id: 2,
-      name: 'Jane Doe',
-      username: 'jane_doe',
-      password: 'pass',
-      permissions: ['songs:read', 'playlists:read']
-    }
-  ]
+  constructor (
+    @InjectRepository(User) private usersRepository: Repository<User>
+  ) { }
 
-  async findOne (username: string): Promise<User | undefined> {
-    return this.users.find(user => user.username === username)
+  async create (createUserDTO: CreateUserDTO): Promise<User> {
+    return await this.usersRepository.save(createUserDTO)
+  }
+
+  async findAll (): Promise<User[]> {
+    return await this.usersRepository.find()
+  }
+
+  async findById (id: number): Promise<User> {
+    return await this.usersRepository.findOneBy({
+      id
+    })
+  }
+
+  async findByUsername (username: string): Promise<User> {
+    return await this.usersRepository.findOneBy({
+      username
+    })
+  }
+
+  async update (id: number, updateUserDTO: UpdateUserDTO): Promise<User> {
+    await this.usersRepository.update(id, updateUserDTO)
+    return await this.usersRepository.findOneBy({ id })
+  }
+
+  async delete (id: number): Promise<User> {
+    await this.usersRepository.softDelete(id)
+    return await this.usersRepository.findOneBy({ id })
   }
 }
