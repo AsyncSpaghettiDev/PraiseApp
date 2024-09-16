@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common'
 import * as argon2 from 'argon2'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
@@ -29,7 +29,7 @@ export class AuthService {
       ...createUserDto,
       password: hash
     })
-    const tokens = await this.getTokens(newUser.id, newUser.username, [])
+    const tokens = await this.getTokens(newUser.id, newUser.username)
     await this.updateRefreshToken(newUser.id, tokens.refreshToken)
     return tokens
   }
@@ -40,7 +40,7 @@ export class AuthService {
     if (!user) throw new BadRequestException('User does not exist')
     const passwordMatches = await argon2.verify(user.password, data.password)
     if (!passwordMatches) { throw new BadRequestException('Password is incorrect') }
-    const tokens = await this.getTokens(user.id, user.username, JSON.parse(user.permissions) || [])
+    const tokens = await this.getTokens(user.id, user.username, user.permissions)
     await this.updateRefreshToken(user.id, tokens.refreshToken)
     return tokens
   }
@@ -60,13 +60,26 @@ export class AuthService {
     })
   }
 
-  async getTokens (userId: number, username: string, permissions: string[]) {
+  async refreshTokens (userId: number, refreshToken: string) {
+    const user = await this.usersService.findById(userId)
+    if (!user || !user.refreshToken) { throw new ForbiddenException('Access Denied') }
+    const refreshTokenMatches = await argon2.verify(
+      user.refreshToken,
+      refreshToken
+    )
+    if (!refreshTokenMatches) throw new ForbiddenException('Access Denied 2')
+    const tokens = await this.getTokens(user.id, user.username, user.permissions)
+    await this.updateRefreshToken(user.id, tokens.refreshToken)
+    return tokens
+  }
+
+  async getTokens (userId: number, username: string, permissions?: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           sub: userId,
           username,
-          permissions
+          permissions: JSON.parse(permissions) || []
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
