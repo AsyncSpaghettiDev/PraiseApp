@@ -24,7 +24,8 @@ import { config } from './config/config'
         password: configService.get('database.password'),
         database: configService.get('database.database'),
         entities,
-        synchronize: true
+        migrations: ['./dist/src/migrations/*.js'],
+        migrationsRun: true
       })
     }),
 
@@ -32,4 +33,4 @@ import { config } from './config/config'
     AuthModule
   ]
 })
-export class AppModule {}
+export class AppModule { }
