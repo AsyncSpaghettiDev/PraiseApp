@@ -29,7 +29,7 @@ export class AuthService {
       ...createUserDto,
       password: hash
     })
-    const tokens = await this.getTokens(newUser.id, newUser.username)
+    const tokens = await this.getTokens(newUser.id, newUser.username, [])
     await this.updateRefreshToken(newUser.id, tokens.refreshToken)
     return tokens
   }
@@ -40,7 +40,7 @@ export class AuthService {
     if (!user) throw new BadRequestException('User does not exist')
     const passwordMatches = await argon2.verify(user.password, data.password)
     if (!passwordMatches) { throw new BadRequestException('Password is incorrect') }
-    const tokens = await this.getTokens(user.id, user.username)
+    const tokens = await this.getTokens(user.id, user.username, JSON.parse(user.permissions) || [])
     await this.updateRefreshToken(user.id, tokens.refreshToken)
     return tokens
   }
@@ -60,12 +60,13 @@ export class AuthService {
     })
   }
 
-  async getTokens (userId: number, username: string) {
+  async getTokens (userId: number, username: string, permissions: string[]) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           sub: userId,
-          username
+          username,
+          permissions
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
