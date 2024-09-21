@@ -10,6 +10,16 @@ import { UsersService } from '../users'
 import { CreateUserDTO } from '../users/user.dto'
 import { LoginDTO } from './auth.dto'
 
+interface jwtPayload {
+  userId: number
+  username: string
+  permissions?: string
+}
+
+export interface Tokens {
+  accessToken: string
+  refreshToken: string
+}
 @Injectable()
 export class AuthService {
   constructor(
@@ -33,7 +43,10 @@ export class AuthService {
       ...createUserDto,
       password: hash
     })
-    const tokens = await this.getTokens(newUser.id, newUser.username)
+    const tokens = await this.getTokens({
+      userId: newUser.id,
+      username: newUser.username
+    })
     await this.updateRefreshToken(newUser.id, tokens.refreshToken)
     return tokens
   }
@@ -45,11 +58,11 @@ export class AuthService {
     const passwordMatches = await argon2.verify(user.password, data.password)
     if (!passwordMatches) throw new BadRequestException('Password is incorrect')
 
-    const tokens = await this.getTokens(
-      user.id,
-      user.username,
-      user.permissions
-    )
+    const tokens = await this.getTokens({
+      userId: user.id,
+      username: user.username,
+      permissions: user.permissions
+    })
     await this.updateRefreshToken(user.id, tokens.refreshToken)
     return tokens
   }
@@ -79,38 +92,50 @@ export class AuthService {
       refreshToken
     )
     if (!refreshTokenMatches) throw new ForbiddenException('Access Denied 2')
-    const tokens = await this.getTokens(
-      user.id,
-      user.username,
-      user.permissions
-    )
+    const tokens = await this.getTokens({
+      userId: user.id,
+      username: user.username,
+      permissions: user.permissions
+    })
     await this.updateRefreshToken(user.id, tokens.refreshToken)
     return tokens
   }
 
-  async getTokens(userId: number, username: string, permissions?: string) {
+  async getAccessToken({ userId, username, permissions }: jwtPayload) {
+    return this.jwtService.signAsync(
+      {
+        sub: userId,
+        username,
+        permissions: JSON.parse(permissions) || []
+      },
+      {
+        secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+        expiresIn: '15m'
+      }
+    )
+  }
+
+  async getRefreshToken({ userId, username }: jwtPayload) {
+    return this.jwtService.signAsync(
+      {
+        sub: userId,
+        username
+      },
+      {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        expiresIn: '7d'
+      }
+    )
+  }
+
+  async getTokens({
+    userId,
+    username,
+    permissions
+  }: jwtPayload): Promise<Tokens> {
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(
-        {
-          sub: userId,
-          username,
-          permissions: JSON.parse(permissions) || []
-        },
-        {
-          secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-          expiresIn: '15m'
-        }
-      ),
-      this.jwtService.signAsync(
-        {
-          sub: userId,
-          username
-        },
-        {
-          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-          expiresIn: '7d'
-        }
-      )
+      this.getAccessToken({ userId, username, permissions }),
+      this.getRefreshToken({ userId, username })
     ])
 
     return {

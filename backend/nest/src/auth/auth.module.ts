@@ -6,7 +6,7 @@ import { JwtModule } from '@nestjs/jwt'
 import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies'
 
 @Module({
-  imports: [UsersModule, JwtModule.register({})],
+  imports: [UsersModule, JwtModule.register({ global: true })],
   providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
   controllers: [AuthController]
 })
