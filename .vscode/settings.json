@@ -1,5 +1,6 @@
 {
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
+  "editor.formatOnType": false,
   "editor.insertSpaces": true,
   "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
   "editor.codeActionsOnSave": {
@@ -7,6 +8,5 @@
   },
   "eslint.format.enable": true,
   "editor.tabSize": 2,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "files.eol": "\r\n"
 }
