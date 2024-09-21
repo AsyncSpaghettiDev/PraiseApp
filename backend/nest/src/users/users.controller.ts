@@ -1,11 +1,11 @@
 import { Controller, Get, Request, UseGuards } from '@nestjs/common'
-import { AccessTokenGuard } from '../common/guards'
+import { AuthenticatedGuard } from '../common/guards'
 
 @Controller('users')
 export class UsersController {
-  @UseGuards(AccessTokenGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get('profile')
-  getProfile (@Request() req) {
+  getProfile(@Request() req) {
     return req.user
   }
 }
