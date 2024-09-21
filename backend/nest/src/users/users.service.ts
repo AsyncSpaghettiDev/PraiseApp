@@ -6,36 +6,36 @@ import { CreateUserDTO, UpdateUserDTO } from './user.dto'
 
 @Injectable()
 export class UsersService {
-  constructor (
+  constructor(
     @InjectRepository(User) private usersRepository: Repository<User>
-  ) { }
+  ) {}
 
-  async create (createUserDTO: CreateUserDTO): Promise<User> {
+  async create(createUserDTO: CreateUserDTO): Promise<User> {
     return await this.usersRepository.save(createUserDTO)
   }
 
-  async findAll (): Promise<User[]> {
+  async findAll(): Promise<User[]> {
     return await this.usersRepository.find()
   }
 
-  async findById (id: number): Promise<User> {
+  async findById(id: number): Promise<User> {
     return await this.usersRepository.findOneBy({
       id
     })
   }
 
-  async findByUsername (username: string): Promise<User> {
+  async findByUsername(username: string): Promise<User> {
     return await this.usersRepository.findOneBy({
       username
     })
   }
 
-  async update (id: number, updateUserDTO: UpdateUserDTO): Promise<User> {
+  async update(id: number, updateUserDTO: UpdateUserDTO): Promise<User> {
     await this.usersRepository.update(id, updateUserDTO)
     return await this.usersRepository.findOneBy({ id })
   }
 
-  async delete (id: number): Promise<User> {
+  async delete(id: number): Promise<User> {
     await this.usersRepository.softDelete(id)
     return await this.usersRepository.findOneBy({ id })
   }

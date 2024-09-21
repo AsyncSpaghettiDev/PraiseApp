@@ -6,21 +6,21 @@ import { CreateUserDTO } from '../users/user.dto'
 
 @Controller('auth')
 export class AuthController {
-  constructor (private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async register (@Body() req: CreateUserDTO) {
+  async register(@Body() req: CreateUserDTO) {
     return this.authService.signUp(req)
   }
 
   @Post('login')
-  async login (@Body() req: LoginDTO) {
+  async login(@Body() req: LoginDTO) {
     return this.authService.signIn(req)
   }
 
   @UseGuards(RefreshTokenGuard)
   @Get('refresh')
-  refreshTokens (@Request() req) {
+  refreshTokens(@Request() req) {
     const userId = req.user.sub
     const refreshToken = req.user.refreshToken
     return this.authService.refreshTokens(userId, refreshToken)
@@ -28,7 +28,7 @@ export class AuthController {
 
   @UseGuards(AccessTokenGuard)
   @Post('logout')
-  async logout (@Request() req) {
+  async logout(@Request() req) {
     console.log(req.user.sub)
     return this.authService.logout(req.user.sub)
   }

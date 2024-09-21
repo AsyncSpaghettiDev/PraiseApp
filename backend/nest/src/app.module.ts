@@ -33,4 +33,4 @@ import { config } from './config/config'
     AuthModule
   ]
 })
-export class AppModule { }
+export class AppModule {}

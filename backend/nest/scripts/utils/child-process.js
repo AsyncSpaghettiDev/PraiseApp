@@ -11,15 +11,15 @@ const execCommand = (command) => {
   return new Promise((resolve, reject) => {
     const process = childProcess.exec(command)
 
-    process.stdout.on('data', data => {
+    process.stdout.on('data', (data) => {
       console.log(data.toString())
     })
 
-    process.stderr.on('data', data => {
+    process.stderr.on('data', (data) => {
       console.error(data.toString())
     })
 
-    process.on('close', code => {
+    process.on('close', (code) => {
       if (code === 0) {
         resolve()
       } else {
