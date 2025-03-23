@@ -10,7 +10,7 @@ import { config } from './config/config'
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['../.env', '../env.local'],
+      envFilePath: ['../.env', '../.env.local'],
       isGlobal: true,
       load: [config]
     }),
