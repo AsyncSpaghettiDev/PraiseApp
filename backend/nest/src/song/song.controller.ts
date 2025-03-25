@@ -13,7 +13,6 @@ export class SongController {
 
   @Post()
   create(@Body() req: CreateSongDTO) {
-    console.log(req)
     return this.songService.newSong(req)
   }
 }

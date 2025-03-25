@@ -26,16 +26,16 @@ export class Song {
   @Column()
   artist: string
 
-  @OneToMany(() => SongTempo, (st) => st.song)
+  @OneToMany(() => SongTempo, (st) => st.song, { cascade: true })
   tempo: SongTempo[]
 
-  @OneToMany(() => SongKey, (st) => st.song)
+  @OneToMany(() => SongKey, (st) => st.song, { cascade: true })
   key: SongKey[]
 
-  @OneToMany(() => SongLyrics, (st) => st.song)
+  @OneToMany(() => SongLyrics, (st) => st.song, { cascade: true })
   lyrics: SongLyrics[]
 
-  @OneToMany(() => SongStructure, (st) => st.song)
+  @OneToMany(() => SongStructure, (st) => st.song, { cascade: true })
   structure: SongStructure[]
 
   @CreateDateColumn()

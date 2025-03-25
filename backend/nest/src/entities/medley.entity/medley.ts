@@ -26,16 +26,16 @@ export class Medley {
   @Column()
   artist: string
 
-  @OneToMany(() => MedleyTempo, (st) => st.medley)
+  @OneToMany(() => MedleyTempo, (st) => st.medley, { cascade: true })
   tempo: MedleyTempo[]
 
-  @OneToMany(() => MedleyKey, (st) => st.medley)
+  @OneToMany(() => MedleyKey, (st) => st.medley, { cascade: true })
   key: MedleyKey[]
 
-  @OneToMany(() => MedleyLyrics, (st) => st.medley)
+  @OneToMany(() => MedleyLyrics, (st) => st.medley, { cascade: true })
   lyrics: MedleyLyrics[]
 
-  @OneToMany(() => MedleyStructure, (st) => st.medley)
+  @OneToMany(() => MedleyStructure, (st) => st.medley, { cascade: true })
   structure: MedleyStructure[]
 
   @CreateDateColumn()
