@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common'
 import { SongService } from './song.service'
-import { CreateSongDTO } from './song.dto'
+import { CreateSongDTO } from './dto/create.dto'
+import { SongUpdateId, UpdateSongDTO } from './dto/update.dto'
 
 @Controller('songs')
 export class SongController {
@@ -8,11 +9,21 @@ export class SongController {
 
   @Get('list')
   list() {
-    return this.songService.findAll()
+    return this.songService.listAll()
+  }
+
+  @Get('lyrics')
+  findByLyrics(@Query('q') q: string) {
+    return this.songService.findByLyrics(q)
   }
 
   @Post()
   create(@Body() req: CreateSongDTO) {
-    return this.songService.newSong(req)
+    return this.songService.create(req)
+  }
+
+  @Put(':id')
+  update(@Param() songId: SongUpdateId, @Body() req: UpdateSongDTO) {
+    return this.songService.update(parseInt(songId.id), req)
   }
 }

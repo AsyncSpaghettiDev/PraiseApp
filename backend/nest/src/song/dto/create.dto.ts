@@ -4,7 +4,8 @@ import {
   ValidateNested,
   IsNumber,
   IsString,
-  IsNotEmpty
+  IsNotEmpty,
+  IsJSON
 } from 'class-validator'
 
 export class CreateSongTempo {
@@ -33,6 +34,7 @@ export class CreateSongLyrics {
   variant: string
 
   @IsString()
+  @IsJSON()
   @IsNotEmpty()
   lyrics: string
 }
@@ -64,20 +66,20 @@ export class CreateSongDTO {
   @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => CreateSongTempo)
-  tempo: CreateSongTempo[]
+  tempo: CreateSongTempo
 
   @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => CreateSongKey)
-  key: CreateSongKey[]
+  key: CreateSongKey
 
   @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => CreateSongLyrics)
-  lyrics: CreateSongLyrics[]
+  lyrics: CreateSongLyrics
 
   @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => CreateSongStructure)
-  structure: CreateSongStructure[]
+  structure: CreateSongStructure
 }

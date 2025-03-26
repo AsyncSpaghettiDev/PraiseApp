@@ -8,7 +8,8 @@ import {
   SongStructure,
   SongTempo
 } from '../entities'
-import { CreateSongDTO } from './song.dto'
+import { CreateSongDTO } from './dto/create.dto'
+import { UpdateSongDTO } from './dto/update.dto'
 
 @Injectable()
 export class SongService {
@@ -24,9 +25,8 @@ export class SongService {
     private dataSource: DataSource
   ) {}
 
-  async findAll(): Promise<Song[]> {
+  async listAll(): Promise<Song[]> {
     return await this.songsRepository.find({
-      loadEagerRelations: true,
       relations: { lyrics: true, key: true, tempo: true, structure: true }
     })
   }
@@ -37,7 +37,7 @@ export class SongService {
         song: true
       },
       where: {
-        lyrics: ILike(lyricsToSearch)
+        normalizedLyrics: ILike(`%${lyricsToSearch}%`)
       }
     })
   }
@@ -61,7 +61,14 @@ export class SongService {
         this.songKeyRepository.create({ ...key, song: createdSong })
       )
       await queryRunner.manager.save(
-        this.songLyricsRepository.create({ ...lyrics, song: createdSong })
+        this.songLyricsRepository.create({
+          variant: lyrics.variant,
+          lyrics: lyrics.lyrics,
+          normalizedLyrics: lyrics.lyrics
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, ''),
+          song: createdSong
+        })
       )
       await queryRunner.manager.save(
         this.songStructureRepository.create({ ...structure, song: createdSong })
@@ -81,5 +88,69 @@ export class SongService {
       // you need to release a queryRunner which was manually instantiated
       await queryRunner.release()
     }
+  }
+
+  async update(songId: number, updateSongDTO: UpdateSongDTO): Promise<Song> {
+    const { artist, key, lyrics, name, structure, style, tempo } = updateSongDTO
+
+    const queryRunner = this.dataSource.createQueryRunner()
+
+    await queryRunner.connect()
+    await queryRunner.startTransaction()
+    try {
+      const songToUpdate = await this.songsRepository.findOne({
+        where: { id: songId }
+      })
+      if (artist) songToUpdate.artist = artist
+      if (name) songToUpdate.name = name
+      if (style) songToUpdate.style = style
+      const updatedSong = await queryRunner.manager.save(songToUpdate)
+
+      if (key && key.length > 0) {
+        for (const keyObj of key)
+          await queryRunner.manager.update(SongKey, keyObj.id, {
+            ...keyObj,
+            song: updatedSong
+          })
+      }
+      if (lyrics && lyrics.length > 0) {
+        for (const lyricsObj of lyrics)
+          await queryRunner.manager.update(SongLyrics, lyricsObj.id, {
+            variant: lyricsObj.variant,
+            lyrics: lyricsObj.lyrics,
+            normalizedLyrics: lyricsObj.lyrics
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, ''),
+            song: updatedSong
+          })
+      }
+      if (structure && structure.length > 0) {
+        for (const structureObj of structure)
+          await queryRunner.manager.update(SongStructure, structureObj.id, {
+            ...structureObj,
+            song: updatedSong
+          })
+      }
+      if (tempo && tempo.length > 0) {
+        for (const tempoObj of tempo)
+          await queryRunner.manager.update(SongTempo, tempoObj.id, {
+            ...tempoObj,
+            song: updatedSong
+          })
+      }
+
+      await queryRunner.commitTransaction()
+    } catch (err) {
+      // since we have errors lets rollback the changes we made
+      console.log(err)
+      await queryRunner.rollbackTransaction()
+    } finally {
+      // you need to release a queryRunner which was manually instantiated
+      await queryRunner.release()
+    }
+    return this.songsRepository.findOne({
+      relations: { lyrics: true, key: true, tempo: true, structure: true },
+      where: { id: songId }
+    })
   }
 }

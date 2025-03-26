@@ -20,6 +20,9 @@ export class SongLyrics {
   @Column()
   lyrics: string
 
+  @Column()
+  normalizedLyrics: string
+
   @CreateDateColumn()
   createdAt: Date
 
