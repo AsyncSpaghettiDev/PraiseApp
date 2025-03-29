@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, ILike, Repository } from 'typeorm'
 import {
@@ -29,6 +29,18 @@ export class SongService {
     return await this.songsRepository.find({
       relations: { lyrics: true, key: true, tempo: true, structure: true }
     })
+  }
+
+  async findOne(songId: number): Promise<Song> {
+    const song = await this.songsRepository.findOne({
+      withDeleted: true,
+      relations: { lyrics: true, key: true, tempo: true, structure: true },
+      where: {
+        id: songId
+      }
+    })
+    if (!song) throw new HttpException('Song not found', HttpStatus.NOT_FOUND)
+    return song
   }
 
   async findByLyrics(lyricsToSearch: string) {
@@ -93,14 +105,16 @@ export class SongService {
   async update(songId: number, updateSongDTO: UpdateSongDTO): Promise<Song> {
     const { artist, key, lyrics, name, structure, style, tempo } = updateSongDTO
 
-    const queryRunner = this.dataSource.createQueryRunner()
+    const songToUpdate = await this.songsRepository.findOne({
+      where: { id: songId }
+    })
+    if (!songToUpdate)
+      throw new HttpException('Song not found', HttpStatus.NOT_FOUND)
 
+    const queryRunner = this.dataSource.createQueryRunner()
     await queryRunner.connect()
     await queryRunner.startTransaction()
     try {
-      const songToUpdate = await this.songsRepository.findOne({
-        where: { id: songId }
-      })
       if (artist) songToUpdate.artist = artist
       if (name) songToUpdate.name = name
       if (style) songToUpdate.style = style
@@ -152,5 +166,11 @@ export class SongService {
       relations: { lyrics: true, key: true, tempo: true, structure: true },
       where: { id: songId }
     })
+  }
+
+  async delete(songId: number, hardDelete: boolean = false) {
+    return hardDelete
+      ? this.songsRepository.delete(songId)
+      : this.songsRepository.softDelete(songId)
   }
 }
