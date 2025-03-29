@@ -94,7 +94,7 @@ export class AuthService {
         {
           sub: userId,
           username,
-          permissions: JSON.parse(permissions) || []
+          permissions: permissions ? JSON.parse(permissions) : []
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
