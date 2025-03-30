@@ -69,25 +69,36 @@ export class SongService {
           style
         })
       )
-      await queryRunner.manager.save(
-        this.songKeyRepository.create({ ...key, song: createdSong })
-      )
-      await queryRunner.manager.save(
-        this.songLyricsRepository.create({
-          variant: lyrics.variant,
-          lyrics: lyrics.lyrics,
-          normalizedLyrics: lyrics.lyrics
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, ''),
-          song: createdSong
-        })
-      )
-      await queryRunner.manager.save(
-        this.songStructureRepository.create({ ...structure, song: createdSong })
-      )
-      await queryRunner.manager.save(
-        this.songTempoRepository.create({ ...tempo, song: createdSong })
-      )
+      if (key.length > 0)
+        for (const keyObj of key)
+          await queryRunner.manager.save(
+            this.songKeyRepository.create({ ...keyObj, song: createdSong })
+          )
+      if (lyrics.length > 0)
+        for (const lyricsObj of lyrics)
+          await queryRunner.manager.save(
+            this.songLyricsRepository.create({
+              variant: lyricsObj.variant,
+              lyrics: lyricsObj.lyrics,
+              normalizedLyrics: lyricsObj.lyrics
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, ''),
+              song: createdSong
+            })
+          )
+      if (structure.length > 0)
+        for (const structureObj of structure)
+          await queryRunner.manager.save(
+            this.songStructureRepository.create({
+              ...structureObj,
+              song: createdSong
+            })
+          )
+      if (tempo.length > 0)
+        for (const tempoObj of tempo)
+          await queryRunner.manager.save(
+            this.songTempoRepository.create({ ...tempoObj, song: createdSong })
+          )
 
       await queryRunner.commitTransaction()
 

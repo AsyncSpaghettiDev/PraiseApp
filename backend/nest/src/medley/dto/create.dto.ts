@@ -9,7 +9,7 @@ import {
   IsArray
 } from 'class-validator'
 
-export class CreateSongTempo {
+export class CreateMedleyTempo {
   @IsString()
   @IsNotEmpty()
   variant: string
@@ -19,7 +19,7 @@ export class CreateSongTempo {
   tempo: number
 }
 
-export class CreateSongKey {
+export class CreateMedleyKey {
   @IsString()
   @IsNotEmpty()
   variant: string
@@ -29,7 +29,7 @@ export class CreateSongKey {
   key: string
 }
 
-export class CreateSongLyrics {
+export class CreateMedleyLyrics {
   @IsString()
   @IsNotEmpty()
   variant: string
@@ -40,18 +40,22 @@ export class CreateSongLyrics {
   lyrics: string
 }
 
-export class CreateSongStructure {
+export class CreateMedleyStructure {
   @IsString()
   @IsNotEmpty()
   variant: string
 
   @IsString()
-  @IsJSON()
   @IsNotEmpty()
+  @IsJSON()
   structure: string
 }
 
-export class CreateSongDTO {
+export class MedleySong {
+  id: number
+}
+
+export class CreateMedleyDTO {
   @IsString()
   @IsNotEmpty()
   name: string
@@ -68,24 +72,30 @@ export class CreateSongDTO {
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateSongTempo)
-  tempo: CreateSongTempo[]
+  @Type(() => CreateMedleyTempo)
+  tempo: CreateMedleyTempo[]
 
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateSongKey)
-  key: CreateSongKey[]
+  @Type(() => CreateMedleyKey)
+  key: CreateMedleyKey[]
 
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateSongLyrics)
-  lyrics: CreateSongLyrics[]
+  @Type(() => CreateMedleyLyrics)
+  lyrics: CreateMedleyLyrics[]
 
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateSongStructure)
-  structure: CreateSongStructure[]
+  @Type(() => CreateMedleyStructure)
+  structure: CreateMedleyStructure[]
+
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => MedleySong)
+  songs: MedleySong[]
 }

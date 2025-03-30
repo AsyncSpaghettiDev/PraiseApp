@@ -20,6 +20,9 @@ export class MedleyLyrics {
   @Column()
   lyrics: string
 
+  @Column()
+  normalizedLyrics: string
+
   @CreateDateColumn()
   createdAt: Date
 
