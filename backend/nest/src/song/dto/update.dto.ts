@@ -1,18 +1,17 @@
-import { Type } from 'class-transformer'
 import {
-  IsIn,
-  ValidateNested,
   IsNumber,
-  IsString,
   IsNotEmpty,
-  IsNumberString
+  IsNumberString,
+  ValidateNested
 } from 'class-validator'
 import {
+  CreateSongDTO,
   CreateSongKey,
   CreateSongLyrics,
   CreateSongStructure,
   CreateSongTempo
 } from './create.dto'
+import { Type } from 'class-transformer'
 
 export class SongUpdateId {
   @IsNotEmpty()
@@ -44,17 +43,7 @@ export class UpdateSongStructure extends CreateSongStructure {
   id: number
 }
 
-export class UpdateSongDTO {
-  @IsString()
-  name: string
-
-  @IsString()
-  @IsIn(['praise', 'worship'])
-  style: 'praise' | 'worship'
-
-  @IsString()
-  artist: string
-
+export class UpdateSongDTO extends CreateSongDTO {
   @ValidateNested({ each: true })
   @Type(() => UpdateSongTempo)
   tempo: UpdateSongTempo[]
@@ -70,4 +59,8 @@ export class UpdateSongDTO {
   @ValidateNested({ each: true })
   @Type(() => UpdateSongStructure)
   structure: UpdateSongStructure[]
+
+  @IsNotEmpty()
+  @IsNumber()
+  id: number
 }

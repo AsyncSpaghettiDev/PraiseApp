@@ -11,6 +11,7 @@ import { MedleyTempo } from './medleyTempo'
 import { MedleyKey } from './medleyKey'
 import { MedleyLyrics } from './medleyLyrics'
 import { MedleyStructure } from './medleyStructure'
+import { Song } from '../song.entity'
 
 @Entity('medleys')
 export class Medley {
@@ -37,6 +38,9 @@ export class Medley {
 
   @OneToMany(() => MedleyStructure, (st) => st.medley, { cascade: true })
   structure: MedleyStructure[]
+
+  @OneToMany(() => Song, (song) => song.medley, { cascade: true })
+  songs: Song[]
 
   @CreateDateColumn()
   createdAt: Date

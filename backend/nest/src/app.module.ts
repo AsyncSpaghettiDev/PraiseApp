@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module'
 import { AuthModule } from './auth/auth.module'
 import { config } from './config/config'
 import { SongModule } from './song/song.module'
+import { MedleyModule } from './medley/medley.module'
 
 @Module({
   imports: [
@@ -34,7 +35,8 @@ import { SongModule } from './song/song.module'
 
     UsersModule,
     AuthModule,
-    SongModule
+    SongModule,
+    MedleyModule
   ]
 })
 export class AppModule {}
