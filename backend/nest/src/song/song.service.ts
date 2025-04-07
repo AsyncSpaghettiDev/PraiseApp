@@ -11,6 +11,13 @@ import {
 import { CreateSongDTO } from './dto/create.dto'
 import { UpdateSongDTO } from './dto/update.dto'
 
+export interface SongMetadataIds {
+  tempoId: number
+  keyId: number
+  lyricsId: number
+  structureId: number
+}
+
 @Injectable()
 export class SongService {
   constructor(
@@ -183,5 +190,24 @@ export class SongService {
     return hardDelete
       ? this.songsRepository.delete(songId)
       : this.songsRepository.softDelete(songId)
+  }
+
+  async validateMetadata(
+    songId: number,
+    { keyId, lyricsId, structureId, tempoId }: SongMetadataIds
+  ): Promise<boolean> {
+    const song = await this.findOne(songId)
+    if (
+      song.key.some((sk) => sk.id === keyId) &&
+      song.lyrics.some((sl) => sl.id === lyricsId) &&
+      song.structure.some((ss) => ss.id === structureId) &&
+      song.tempo.some((st) => st.id === tempoId)
+    ) {
+      return true
+    }
+    throw new HttpException(
+      `The given ids for the song id ${songId} are not valid`,
+      HttpStatus.BAD_REQUEST
+    )
   }
 }

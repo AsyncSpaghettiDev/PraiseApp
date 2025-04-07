@@ -5,9 +5,11 @@ import {
   DeleteDateColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne
+  ManyToOne,
+  OneToMany
 } from 'typeorm'
 import { Song } from './song'
+import { SetlistSong } from '../setlist.entity'
 
 @Entity()
 export class SongKey {
@@ -31,4 +33,7 @@ export class SongKey {
 
   @ManyToOne(() => Song, (st) => st.key)
   song: Song
+
+  @OneToMany(() => SetlistSong, (sts) => sts.key)
+  setlistSong: SetlistSong[]
 }
