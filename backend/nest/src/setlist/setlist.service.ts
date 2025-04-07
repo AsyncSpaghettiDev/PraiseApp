@@ -30,7 +30,7 @@ export class SetlistService {
   }
 
   async findOne(setlistId: number): Promise<Setlist> {
-    const setlist = this.setlistRepository.findOne({
+    const setlist = await this.setlistRepository.findOne({
       where: { id: setlistId },
       relations: {
         setlistSongs: {
@@ -108,6 +108,7 @@ export class SetlistService {
       // since we have errors lets rollback the changes we made
       console.log(err)
       await queryRunner.rollbackTransaction()
+      throw new HttpException({ err }, HttpStatus.INTERNAL_SERVER_ERROR)
     } finally {
       // you need to release a queryRunner which was manually instantiated
       await queryRunner.release()
@@ -152,12 +153,13 @@ export class SetlistService {
           })
         )
       }
-      queryRunner.manager.save(setlistToUpdate)
+      queryRunner.manager.save([setlistToUpdate, ...songsToUpdate])
       await queryRunner.commitTransaction()
     } catch (err) {
       // since we have errors lets rollback the changes we made
       console.log(err)
       await queryRunner.rollbackTransaction()
+      throw new HttpException({ err }, HttpStatus.INTERNAL_SERVER_ERROR)
     } finally {
       // you need to release a queryRunner which was manually instantiated
       await queryRunner.release()
