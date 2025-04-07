@@ -14,6 +14,7 @@ import {
   SongStructure,
   SongTempo
 } from './song.entity'
+import { Setlist, SetlistSong } from './setlist.entity'
 
 export default [
   User,
@@ -27,7 +28,9 @@ export default [
   MedleyKey,
   MedleyLyrics,
   MedleyStructure,
-  MedleyTempo
+  MedleyTempo,
+  Setlist,
+  SetlistSong
 ]
 
 export {
@@ -42,5 +45,7 @@ export {
   MedleyKey,
   MedleyLyrics,
   MedleyStructure,
-  MedleyTempo
+  MedleyTempo,
+  Setlist,
+  SetlistSong
 }
