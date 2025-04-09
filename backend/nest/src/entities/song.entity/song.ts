@@ -5,14 +5,12 @@ import {
   DeleteDateColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
-  ManyToOne
+  OneToMany
 } from 'typeorm'
 import { SongTempo } from './songTempo'
 import { SongKey } from './songKey'
 import { SongLyrics } from './songLyrics'
 import { SongStructure } from './songStructure'
-import { Medley } from '../medley.entity'
 import { SetlistSong } from '../setlist.entity'
 
 @Entity('songs')
@@ -43,10 +41,6 @@ export class Song {
 
   @OneToMany(() => SongStructure, (st) => st.song, { cascade: true })
   structure: SongStructure[]
-
-  // Experimental
-  @ManyToOne(() => Medley, (medley) => medley.songs)
-  medley: Medley
 
   @OneToMany(() => SetlistSong, (setlistSong) => setlistSong.song)
   setlistSongs: SetlistSong[]

@@ -7,7 +7,6 @@ import { UsersModule } from './users/users.module'
 import { AuthModule } from './auth/auth.module'
 import { config } from './config/config'
 import { SongModule } from './song/song.module'
-import { MedleyModule } from './medley/medley.module'
 import { SetlistModule } from './setlist/setlist.module'
 
 @Module({
@@ -37,7 +36,6 @@ import { SetlistModule } from './setlist/setlist.module'
     UsersModule,
     AuthModule,
     SongModule,
-    MedleyModule,
     SetlistModule
   ]
 })

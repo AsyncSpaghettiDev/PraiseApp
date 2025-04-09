@@ -1,13 +1,6 @@
 import { User } from './user.entity'
 import { Team } from './team.entity'
 import {
-  Medley,
-  MedleyKey,
-  MedleyLyrics,
-  MedleyStructure,
-  MedleyTempo
-} from './medley.entity'
-import {
   Song,
   SongKey,
   SongLyrics,
@@ -24,11 +17,6 @@ export default [
   SongLyrics,
   SongStructure,
   SongTempo,
-  Medley,
-  MedleyKey,
-  MedleyLyrics,
-  MedleyStructure,
-  MedleyTempo,
   Setlist,
   SetlistSong
 ]
@@ -41,11 +29,6 @@ export {
   SongLyrics,
   SongStructure,
   SongTempo,
-  Medley,
-  MedleyKey,
-  MedleyLyrics,
-  MedleyStructure,
-  MedleyTempo,
   Setlist,
   SetlistSong
 }
