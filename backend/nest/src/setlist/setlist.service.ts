@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Setlist, SetlistSong } from '../entities'
-import { DataSource, Repository } from 'typeorm'
+import { DataSource, ILike, Repository } from 'typeorm'
 import { CreateSetlistDTO, UpdateSetlistDTO } from './setlist.dto'
 import { SongService } from '../song/song.service'
 
@@ -48,6 +48,22 @@ export class SetlistService {
     return setlist
   }
 
+  async searchByTag(tag: string): Promise<Setlist[]> {
+    return this.setlistRepository.find({
+      where: { tags: ILike(`%${tag}%`) },
+      relations: {
+        setlistSongs: {
+          song: true,
+          key: true,
+          lyrics: true,
+          setlist: true,
+          structure: true,
+          tempo: true
+        }
+      }
+    })
+  }
+
   async songAppearances(songId: number): Promise<object> {
     // Count how many times a specific song appears in setlists
     const count = await this.setlistSongRepository.count({
@@ -68,7 +84,7 @@ export class SetlistService {
   }
 
   async create(createSetlist: CreateSetlistDTO): Promise<Setlist> {
-    const { date, name, songs } = createSetlist
+    const { date, name, songs, tags } = createSetlist
     // validate songs
     for (const { songId, keyId, lyricsId, structureId, tempoId } of songs) {
       await this.songService.validateMetadata(songId, {
@@ -86,7 +102,8 @@ export class SetlistService {
       const newSetlist = await queryRunner.manager.save(
         queryRunner.manager.create(Setlist, {
           name,
-          date
+          date,
+          tags
         })
       )
 
@@ -119,7 +136,7 @@ export class SetlistService {
     setlistId: number,
     updateSetlist: UpdateSetlistDTO
   ): Promise<Setlist> {
-    const { date, name, songs } = updateSetlist
+    const { date, name, songs, tags } = updateSetlist
     const setlistToUpdate = await this.findOne(setlistId)
     const queryRunner = this.dataSource.createQueryRunner()
 
@@ -128,6 +145,7 @@ export class SetlistService {
     try {
       setlistToUpdate.date = date
       setlistToUpdate.name = name
+      setlistToUpdate.tags = tags
       const songsToUpdate = []
       for (const {
         keyId,

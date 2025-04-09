@@ -66,6 +66,10 @@ export class CreateSongDTO {
   artist: string
 
   @IsNotEmpty()
+  @IsJSON()
+  tags: string
+
+  @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateSongTempo)

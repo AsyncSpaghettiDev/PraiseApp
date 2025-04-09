@@ -50,6 +50,13 @@ export class SongService {
     return song
   }
 
+  async searchByTag(tag: string): Promise<Song[]> {
+    return await this.songsRepository.find({
+      where: { tags: ILike(`%${tag}%`) },
+      relations: { lyrics: true, key: true, tempo: true, structure: true }
+    })
+  }
+
   async findByLyrics(lyricsToSearch: string) {
     return await this.songLyricsRepository.find({
       relations: {
@@ -62,7 +69,8 @@ export class SongService {
   }
 
   async create(createSongDTO: CreateSongDTO): Promise<Song> {
-    const { artist, key, lyrics, name, structure, style, tempo } = createSongDTO
+    const { artist, key, lyrics, name, structure, style, tempo, tags } =
+      createSongDTO
 
     const queryRunner = this.dataSource.createQueryRunner()
 
@@ -73,6 +81,7 @@ export class SongService {
         this.songsRepository.create({
           artist,
           name,
+          tags,
           style
         })
       )
@@ -121,7 +130,8 @@ export class SongService {
   }
 
   async update(songId: number, updateSongDTO: UpdateSongDTO): Promise<Song> {
-    const { artist, key, lyrics, name, structure, style, tempo } = updateSongDTO
+    const { artist, key, lyrics, name, structure, style, tempo, tags } =
+      updateSongDTO
 
     const songToUpdate = await this.songsRepository.findOne({
       where: { id: songId }
@@ -136,6 +146,7 @@ export class SongService {
       if (artist) songToUpdate.artist = artist
       if (name) songToUpdate.name = name
       if (style) songToUpdate.style = style
+      if (tags) songToUpdate.tags = tags
       const updatedSong = await queryRunner.manager.save(songToUpdate)
 
       if (key && key.length > 0) {

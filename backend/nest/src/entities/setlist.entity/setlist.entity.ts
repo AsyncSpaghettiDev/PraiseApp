@@ -20,6 +20,9 @@ export class Setlist {
   @Column()
   date: Date
 
+  @Column()
+  tags: string
+
   @OneToMany(() => SetlistSong, (setlistSong) => setlistSong.setlist, {
     cascade: true
   })

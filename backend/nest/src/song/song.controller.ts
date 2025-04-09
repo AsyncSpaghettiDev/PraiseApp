@@ -21,6 +21,12 @@ export class SongController {
     return this.songService.listAll()
   }
 
+  @Get('tags')
+  searchByTag(@Query('tag') tag: string) {
+    if (tag === '') return []
+    return this.songService.searchByTag(tag) ?? []
+  }
+
   @Get(':id')
   getOne(@Param() songId: SongUpdateId) {
     return this.songService.findOne(parseInt(songId.id))
