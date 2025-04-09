@@ -29,6 +29,9 @@ export class Song {
   @Column()
   artist: string
 
+  @Column()
+  tags: string
+
   @OneToMany(() => SongTempo, (st) => st.song, { cascade: true })
   tempo: SongTempo[]
 

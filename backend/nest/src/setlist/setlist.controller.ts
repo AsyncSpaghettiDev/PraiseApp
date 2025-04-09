@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query
+} from '@nestjs/common'
 import { SetlistService } from './setlist.service'
 import { CreateSetlistDTO, SetlistId, UpdateSetlistDTO } from './setlist.dto'
 
@@ -9,6 +18,12 @@ export class SetlistController {
   @Get('list')
   getAll() {
     return this.setlistService.listAll()
+  }
+
+  @Get('tags')
+  searchByTag(@Query('tag') tag: string) {
+    if (tag === '') return []
+    return this.setlistService.searchByTag(tag) ?? []
   }
 
   @Get(':id')

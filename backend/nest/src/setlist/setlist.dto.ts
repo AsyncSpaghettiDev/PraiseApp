@@ -2,6 +2,7 @@ import { Type } from 'class-transformer'
 import {
   IsArray,
   IsDateString,
+  IsJSON,
   IsNotEmpty,
   IsNumber,
   IsNumberString,
@@ -41,6 +42,10 @@ export class CreateSetlistDTO {
   @IsNotEmpty()
   @IsString()
   name: string
+
+  @IsNotEmpty()
+  @IsJSON()
+  tags: string
 
   @IsNotEmpty()
   @IsDateString()
