@@ -1,5 +1,5 @@
 {
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "editor.formatOnType": false,
   "editor.insertSpaces": true,
   "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
