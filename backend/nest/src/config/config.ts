@@ -7,12 +7,8 @@ export const config = () => {
     jwtAccessSecret: envFile.JWT_ACCESS_SECRET,
     jwtRefreshSecret: envFile.JWT_REFRESH_SECRET,
     environment: envFile.NODE_ENV,
-    database: {
-      host: envFile.DATABASE_HOST,
-      port: parseInt(envFile.DATABASE_PORT, 10),
-      username: envFile.DATABASE_USER,
-      password: envFile.DATABASE_PASSWORD,
-      database: envFile.DATABASE_NAME
+    mongodb: {
+      uri: envFile.MONGODB_URI
     }
   }
   return variables

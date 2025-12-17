@@ -66,8 +66,9 @@ export class CreateSongDTO {
   artist: string
 
   @IsNotEmpty()
-  @IsJSON()
-  tags: string
+  @IsArray()
+  @IsString({ each: true })
+  tags: string[]
 
   @IsNotEmpty()
   @IsArray()

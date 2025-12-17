@@ -15,7 +15,7 @@ import { CreateSetlistDTO, SetlistId, UpdateSetlistDTO } from './setlist.dto'
 export class SetlistController {
   constructor(private readonly setlistService: SetlistService) {}
 
-  @Get('list')
+  @Get()
   getAll() {
     return this.setlistService.listAll()
   }
@@ -28,12 +28,12 @@ export class SetlistController {
 
   @Get(':id')
   getOne(@Param() setlistId: SetlistId) {
-    return this.setlistService.findOne(parseInt(setlistId.id))
+    return this.setlistService.findOne(setlistId.id)
   }
 
   @Get('song/:id')
   getSongAppearances(@Param() songId: SetlistId) {
-    return this.setlistService.songAppearances(parseInt(songId.id))
+    return this.setlistService.songAppearances(songId.id)
   }
 
   @Post()
@@ -43,16 +43,16 @@ export class SetlistController {
 
   @Put(':id')
   update(@Param() setlist: SetlistId, @Body() req: UpdateSetlistDTO) {
-    return this.setlistService.update(parseInt(setlist.id), req)
+    return this.setlistService.update(setlist.id, req)
   }
 
   @Delete('archive/:id')
-  archive(@Param() setlist: SetlistId) {
-    return this.setlistService.delete(parseInt(setlist.id))
+  archive(@Param() setlist: SetlistId): Promise<unknown> {
+    return this.setlistService.delete(setlist.id)
   }
 
   @Delete('remove/:id')
-  delete(@Param() setlist: SetlistId) {
-    return this.setlistService.delete(parseInt(setlist.id), true)
+  delete(@Param() setlist: SetlistId): Promise<unknown> {
+    return this.setlistService.delete(setlist.id, true)
   }
 }

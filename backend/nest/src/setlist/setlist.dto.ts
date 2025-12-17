@@ -1,40 +1,92 @@
 import { Type } from 'class-transformer'
 import {
+  IsIn,
   IsArray,
   IsDateString,
-  IsJSON,
   IsNotEmpty,
+  IsMongoId,
   IsNumber,
-  IsNumberString,
   IsString,
   ValidateNested
 } from 'class-validator'
 
+export class CreateSongTempoDTO {
+  @IsNotEmpty()
+  @IsString()
+  variant: string
+
+  @IsNotEmpty()
+  @IsNumber()
+  tempo: number
+}
+
+export class CreateSongKeyDTO {
+  @IsNotEmpty()
+  @IsString()
+  variant: string
+
+  @IsNotEmpty()
+  @IsString()
+  key: string
+}
+
+export class CreateSongLyricsDTO {
+  @IsNotEmpty()
+  @IsString()
+  variant: string
+
+  @IsNotEmpty()
+  @IsString()
+  lyrics: string
+}
+
+export class CreateSongStructureDTO {
+  @IsNotEmpty()
+  @IsString()
+  variant: string
+
+  @IsNotEmpty()
+  @IsString()
+  structure: string
+}
+
 export class CreateSetlistSongDTO {
   @IsNotEmpty()
-  @IsNumber()
-  songId: number
+  @IsString()
+  name: string
 
   @IsNotEmpty()
-  @IsNumber()
-  tempoId: number
+  @IsIn(['praise', 'worship'])
+  style: 'praise' | 'worship'
 
   @IsNotEmpty()
-  @IsNumber()
-  keyId: number
+  @IsString()
+  artist: string
 
   @IsNotEmpty()
-  @IsNumber()
-  lyricsId: number
+  @ValidateNested()
+  @Type(() => CreateSongTempoDTO)
+  tempo: CreateSongTempoDTO
 
   @IsNotEmpty()
-  @IsNumber()
-  structureId: number
+  @ValidateNested()
+  @Type(() => CreateSongKeyDTO)
+  key: CreateSongKeyDTO
+
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => CreateSongLyricsDTO)
+  lyrics: CreateSongLyricsDTO
+
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => CreateSongStructureDTO)
+  structure: CreateSongStructureDTO
 }
 
 export class SetlistId {
   @IsNotEmpty()
-  @IsNumberString()
+  @IsMongoId()
   id: string
 }
 
@@ -44,8 +96,9 @@ export class CreateSetlistDTO {
   name: string
 
   @IsNotEmpty()
-  @IsJSON()
-  tags: string
+  @IsArray()
+  @IsString({ each: true })
+  tags: string[]
 
   @IsNotEmpty()
   @IsDateString()
@@ -60,14 +113,14 @@ export class CreateSetlistDTO {
 
 export class UpdateSetlistSongDTO extends CreateSetlistSongDTO {
   @IsNotEmpty()
-  @IsNumberString()
+  @IsMongoId()
   id: string
 }
 
 export class UpdateSetlistDTO extends CreateSetlistDTO {
   @IsNotEmpty()
-  @IsNumberString()
-  id: number
+  @IsMongoId()
+  id: string
 
   @IsNotEmpty()
   @IsArray()

@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config'
 import { UsersService } from '../users'
 import { CreateUserDTO } from '../users/user.dto'
 import { LoginDTO } from './auth.dto'
+import { User } from '../schemas/user.schema'
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,10 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService
   ) {}
+
+  private getUserId(user: Pick<User, '_id'>): string {
+    return user._id.toString()
+  }
 
   async signUp(createUserDto: CreateUserDTO): Promise<any> {
     // Check if user exists
@@ -33,8 +38,9 @@ export class AuthService {
       ...createUserDto,
       password: hash
     })
-    const tokens = await this.getTokens(newUser.id, newUser.username)
-    await this.updateRefreshToken(newUser.id, tokens.refreshToken)
+    const userId = this.getUserId(newUser)
+    const tokens = await this.getTokens(userId, newUser.username)
+    await this.updateRefreshToken(userId, tokens.refreshToken)
     return tokens
   }
 
@@ -46,15 +52,15 @@ export class AuthService {
     if (!passwordMatches) throw new BadRequestException('Password is incorrect')
 
     const tokens = await this.getTokens(
-      user.id,
+      this.getUserId(user),
       user.username,
       user.permissions
     )
-    await this.updateRefreshToken(user.id, tokens.refreshToken)
+    await this.updateRefreshToken(this.getUserId(user), tokens.refreshToken)
     return tokens
   }
 
-  async logout(userId: number) {
+  async logout(userId: string) {
     return this.usersService.update(userId, { refreshToken: null })
   }
 
@@ -62,14 +68,14 @@ export class AuthService {
     return argon2.hash(data)
   }
 
-  async updateRefreshToken(userId: number, refreshToken: string) {
+  async updateRefreshToken(userId: string, refreshToken: string) {
     const hashedRefreshToken = await this.hashData(refreshToken)
     await this.usersService.update(userId, {
       refreshToken: hashedRefreshToken
     })
   }
 
-  async refreshTokens(userId: number, refreshToken: string) {
+  async refreshTokens(userId: string, refreshToken: string) {
     const user = await this.usersService.findById(userId)
     if (!user || !user.refreshToken) {
       throw new ForbiddenException('Access Denied')
@@ -80,15 +86,15 @@ export class AuthService {
     )
     if (!refreshTokenMatches) throw new ForbiddenException('Access Denied 2')
     const tokens = await this.getTokens(
-      user.id,
+      this.getUserId(user),
       user.username,
       user.permissions
     )
-    await this.updateRefreshToken(user.id, tokens.refreshToken)
+    await this.updateRefreshToken(this.getUserId(user), tokens.refreshToken)
     return tokens
   }
 
-  async getTokens(userId: number, username: string, permissions?: string) {
+  async getTokens(userId: string, username: string, permissions?: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
