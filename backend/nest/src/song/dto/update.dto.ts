@@ -1,9 +1,4 @@
-import {
-  IsNumber,
-  IsNotEmpty,
-  IsNumberString,
-  ValidateNested
-} from 'class-validator'
+import { IsNotEmpty, IsMongoId, ValidateNested } from 'class-validator'
 import {
   CreateSongDTO,
   CreateSongKey,
@@ -15,32 +10,32 @@ import { Type } from 'class-transformer'
 
 export class SongUpdateId {
   @IsNotEmpty()
-  @IsNumberString()
+  @IsMongoId()
   id: string
 }
 
 export class UpdateSongTempo extends CreateSongTempo {
   @IsNotEmpty()
-  @IsNumber()
-  id: number
+  @IsMongoId()
+  id: string
 }
 
 export class UpdateSongKey extends CreateSongKey {
   @IsNotEmpty()
-  @IsNumber()
-  id: number
+  @IsMongoId()
+  id: string
 }
 
 export class UpdateSongLyrics extends CreateSongLyrics {
   @IsNotEmpty()
-  @IsNumber()
-  id: number
+  @IsMongoId()
+  id: string
 }
 
 export class UpdateSongStructure extends CreateSongStructure {
   @IsNotEmpty()
-  @IsNumber()
-  id: number
+  @IsMongoId()
+  id: string
 }
 
 export class UpdateSongDTO extends CreateSongDTO {
@@ -61,6 +56,6 @@ export class UpdateSongDTO extends CreateSongDTO {
   structure: UpdateSongStructure[]
 
   @IsNotEmpty()
-  @IsNumber()
-  id: number
+  @IsMongoId()
+  id: string
 }

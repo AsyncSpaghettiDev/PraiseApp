@@ -1,24 +1,12 @@
 import { Module } from '@nestjs/common'
 import { SongController } from './song.controller'
 import { SongService } from './song.service'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import {
-  Song,
-  SongKey,
-  SongLyrics,
-  SongStructure,
-  SongTempo
-} from '../entities'
+import { MongooseModule } from '@nestjs/mongoose'
+import { Song, SongSchema } from '../schemas/song.schema'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Song,
-      SongKey,
-      SongLyrics,
-      SongStructure,
-      SongTempo
-    ])
+    MongooseModule.forFeature([{ name: Song.name, schema: SongSchema }])
   ],
   exports: [SongService],
   controllers: [SongController],

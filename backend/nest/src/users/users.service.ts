@@ -1,42 +1,41 @@
 import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { User } from '../entities'
-import { Repository } from 'typeorm'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model, Types } from 'mongoose'
 import { CreateUserDTO, UpdateUserDTO } from './user.dto'
+import { User } from '../schemas/user.schema'
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>
-  ) {}
+  constructor(@InjectModel(User.name) private usersModel: Model<any>) {}
 
   async create(createUserDTO: CreateUserDTO): Promise<User> {
-    return await this.usersRepository.save(createUserDTO)
+    return await this.usersModel.create(createUserDTO)
   }
 
   async findAll(): Promise<User[]> {
-    return await this.usersRepository.find()
+    return await this.usersModel.find().exec()
   }
 
-  async findById(id: number): Promise<User> {
-    return await this.usersRepository.findOneBy({
-      id
-    })
+  async findById(id: string): Promise<User> {
+    if (!Types.ObjectId.isValid(id)) return null
+    return await this.usersModel.findById(id).exec()
   }
 
   async findByUsername(username: string): Promise<User> {
-    return await this.usersRepository.findOneBy({
-      username
-    })
+    return await this.usersModel.findOne({ username }).exec()
   }
 
-  async update(id: number, updateUserDTO: UpdateUserDTO): Promise<User> {
-    await this.usersRepository.update(id, updateUserDTO)
-    return await this.usersRepository.findOneBy({ id })
+  async update(id: string, updateUserDTO: UpdateUserDTO): Promise<User> {
+    if (!Types.ObjectId.isValid(id)) return null
+    return await this.usersModel
+      .findByIdAndUpdate(id, updateUserDTO, { new: true })
+      .exec()
   }
 
-  async delete(id: number): Promise<User> {
-    await this.usersRepository.softDelete(id)
-    return await this.usersRepository.findOneBy({ id })
+  async delete(id: string): Promise<User> {
+    if (!Types.ObjectId.isValid(id)) return null
+    return await this.usersModel
+      .findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true })
+      .exec()
   }
 }

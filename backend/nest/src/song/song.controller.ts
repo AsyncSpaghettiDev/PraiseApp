@@ -16,25 +16,25 @@ import { SongUpdateId, UpdateSongDTO } from './dto/update.dto'
 export class SongController {
   constructor(private readonly songService: SongService) {}
 
-  @Get('list')
+  @Get()
   list() {
     return this.songService.listAll()
   }
 
   @Get('tags')
   searchByTag(@Query('tag') tag: string) {
-    if (tag === '') return []
+    if (!tag || tag === '') return []
     return this.songService.searchByTag(tag) ?? []
-  }
-
-  @Get(':id')
-  getOne(@Param() songId: SongUpdateId) {
-    return this.songService.findOne(parseInt(songId.id))
   }
 
   @Get('searchByLyrics')
   findByLyrics(@Query('q') q: string) {
     return this.songService.findByLyrics(q)
+  }
+
+  @Get(':id')
+  getOne(@Param() songId: SongUpdateId) {
+    return this.songService.findOne(songId.id)
   }
 
   @Post()
@@ -44,16 +44,16 @@ export class SongController {
 
   @Put(':id')
   update(@Param() songId: SongUpdateId, @Body() req: UpdateSongDTO) {
-    return this.songService.update(parseInt(songId.id), req)
+    return this.songService.update(songId.id, req)
   }
 
   @Delete('archive/:id')
-  archive(@Param() songId: SongUpdateId) {
-    return this.songService.delete(parseInt(songId.id))
+  archive(@Param() songId: SongUpdateId): Promise<unknown> {
+    return this.songService.delete(songId.id)
   }
 
   @Delete('remove/:id')
-  delete(@Param() songId: SongUpdateId) {
-    return this.songService.delete(parseInt(songId.id), true)
+  delete(@Param() songId: SongUpdateId): Promise<unknown> {
+    return this.songService.delete(songId.id, true)
   }
 }

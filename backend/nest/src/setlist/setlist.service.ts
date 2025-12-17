@@ -1,82 +1,72 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Setlist, SetlistSong } from '../entities'
-import { DataSource, ILike, Repository } from 'typeorm'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model, Types } from 'mongoose'
+import { Setlist } from '../schemas/setlist.schema'
+import { Song } from '../schemas/song.schema'
 import { CreateSetlistDTO, UpdateSetlistDTO } from './setlist.dto'
-import { SongService } from '../song/song.service'
+
+type IdLike = Types.ObjectId | string
 
 @Injectable()
 export class SetlistService {
   constructor(
-    private songService: SongService,
-    private dataSource: DataSource,
-    @InjectRepository(SetlistSong)
-    private setlistSongRepository: Repository<SetlistSong>,
-    @InjectRepository(Setlist) private setlistRepository: Repository<Setlist>
+    @InjectModel(Setlist.name) private setlistModel: Model<Setlist>,
+    @InjectModel(Song.name) private songModel: Model<Song>
   ) {}
 
-  listAll(): Promise<Setlist[]> {
-    return this.setlistRepository.find({
-      relations: {
-        setlistSongs: {
-          key: true,
-          lyrics: true,
-          song: true,
-          structure: true,
-          tempo: true
-        }
-      }
-    })
+  private idToString(id: IdLike | null | undefined): string {
+    if (!id) return ''
+    return id.toString()
   }
 
-  async findOne(setlistId: number): Promise<Setlist> {
-    const setlist = await this.setlistRepository.findOne({
-      where: { id: setlistId },
-      relations: {
-        setlistSongs: {
-          song: true,
-          key: true,
-          lyrics: true,
-          setlist: true,
-          structure: true,
-          tempo: true
-        }
-      }
-    })
+  listAll(): Promise<Setlist[]> {
+    return this.setlistModel.find().lean<Setlist[]>().exec()
+  }
+
+  async findOne(setlistId: string): Promise<Setlist> {
+    if (!Types.ObjectId.isValid(setlistId))
+      throw new HttpException('Setlist not found', HttpStatus.NOT_FOUND)
+    const setlist = await this.setlistModel
+      .findById(setlistId)
+      .lean<Setlist | null>()
+      .exec()
     if (!setlist)
       throw new HttpException('Setlist not found', HttpStatus.NOT_FOUND)
     return setlist
   }
 
   async searchByTag(tag: string): Promise<Setlist[]> {
-    return this.setlistRepository.find({
-      where: { tags: ILike(`%${tag}%`) },
-      relations: {
-        setlistSongs: {
-          song: true,
-          key: true,
-          lyrics: true,
-          setlist: true,
-          structure: true,
-          tempo: true
-        }
-      }
-    })
+    const setlists = await this.setlistModel
+      .find({ tags: { $regex: tag, $options: 'i' } })
+      .lean<Setlist[]>()
+      .exec()
+    return setlists
   }
 
-  async songAppearances(songId: number): Promise<object> {
+  async songAppearances(songId: string): Promise<object> {
     // Count how many times a specific song appears in setlists
-    const count = await this.setlistSongRepository.count({
-      where: {
-        song: { id: songId }
-      }
-    })
-    const lastSetlistSong = await this.setlistSongRepository
-      .createQueryBuilder('setlistSong')
-      .leftJoinAndSelect('setlistSong.setlist', 'setlist')
-      .where('setlistSong.songId = :songId', { songId })
-      .orderBy('setlist.date', 'DESC') // or order by 'setlist.id' if date isn't available
-      .getOne()
+    if (!Types.ObjectId.isValid(songId))
+      return { count: 0, lastSetlistSong: null }
+    const song = await this.songModel
+      .findById(songId)
+      .lean<Pick<Song, 'name' | 'artist'> | null>()
+      .exec()
+    if (!song) return { count: 0, lastSetlistSong: null }
+
+    const query = {
+      'songs.name': song.name,
+      'songs.artist': song.artist
+    }
+
+    const count = await this.setlistModel.countDocuments(query).exec()
+    const lastSetlist = await this.setlistModel
+      .findOne(query)
+      .sort({ date: -1 })
+      .lean<Setlist | null>()
+      .exec()
+    const lastSetlistSong = (lastSetlist as any)?.songs?.find(
+      (ss) => ss?.name === song.name && ss?.artist === song.artist
+    )
     return {
       count,
       lastSetlistSong
@@ -85,110 +75,73 @@ export class SetlistService {
 
   async create(createSetlist: CreateSetlistDTO): Promise<Setlist> {
     const { date, name, songs, tags } = createSetlist
-    // validate songs
-    for (const { songId, keyId, lyricsId, structureId, tempoId } of songs) {
-      await this.songService.validateMetadata(songId, {
-        keyId,
-        lyricsId,
-        structureId,
-        tempoId
-      })
-    }
-    const queryRunner = this.dataSource.createQueryRunner()
-
-    await queryRunner.connect()
-    await queryRunner.startTransaction()
     try {
-      const newSetlist = await queryRunner.manager.save(
-        queryRunner.manager.create(Setlist, {
-          name,
-          date,
-          tags
-        })
-      )
-
-      const setlistSongs = queryRunner.manager.create(
-        SetlistSong,
-        songs.map(({ keyId, lyricsId, songId, structureId, tempoId }) => ({
-          setlist: { id: newSetlist.id },
-          key: { id: keyId },
-          lyrics: { id: lyricsId },
-          song: { id: songId },
-          structure: { id: structureId },
-          tempo: { id: tempoId }
-        }))
-      )
-      await queryRunner.manager.save(setlistSongs)
-      await queryRunner.commitTransaction()
-      return newSetlist
+      return await this.setlistModel.create({
+        name,
+        date,
+        tags,
+        songs
+      })
     } catch (err) {
       // since we have errors lets rollback the changes we made
       console.log(err)
-      await queryRunner.rollbackTransaction()
       throw new HttpException({ err }, HttpStatus.INTERNAL_SERVER_ERROR)
-    } finally {
-      // you need to release a queryRunner which was manually instantiated
-      await queryRunner.release()
     }
   }
 
   async update(
-    setlistId: number,
+    setlistId: string,
     updateSetlist: UpdateSetlistDTO
-  ): Promise<Setlist> {
+  ): Promise<any> {
     const { date, name, songs, tags } = updateSetlist
-    const setlistToUpdate = await this.findOne(setlistId)
-    const queryRunner = this.dataSource.createQueryRunner()
+    if (!Types.ObjectId.isValid(setlistId))
+      throw new HttpException('Setlist not found', HttpStatus.NOT_FOUND)
+    const setlistToUpdate = await this.setlistModel.findById(setlistId).exec()
+    if (!setlistToUpdate)
+      throw new HttpException('Setlist not found', HttpStatus.NOT_FOUND)
 
-    await queryRunner.connect()
-    await queryRunner.startTransaction()
     try {
       setlistToUpdate.date = date
       setlistToUpdate.name = name
       setlistToUpdate.tags = tags
-      const songsToUpdate = []
-      for (const {
-        keyId,
-        lyricsId,
-        songId,
-        structureId,
-        tempoId,
-        id
-      } of songs) {
-        await this.songService.validateMetadata(songId, {
-          keyId,
-          lyricsId,
-          structureId,
-          tempoId
-        })
-        songsToUpdate.push(
-          await queryRunner.manager.update(SetlistSong, id, {
-            key: { id: keyId },
-            lyrics: { id: lyricsId },
-            song: { id: songId },
-            structure: { id: structureId },
-            tempo: { id: tempoId }
-          })
+      for (const setlistSong of songs) {
+        const subdoc = setlistToUpdate.songs.find(
+          (ss) =>
+            this.idToString(ss._id) === this.idToString((setlistSong as any).id)
         )
+        if (subdoc) {
+          subdoc.name = (setlistSong as any).name
+          subdoc.style = (setlistSong as any).style
+          subdoc.artist = (setlistSong as any).artist
+          subdoc.tempo = (setlistSong as any).tempo
+          subdoc.key = (setlistSong as any).key
+          subdoc.lyrics = (setlistSong as any).lyrics
+          subdoc.structure = (setlistSong as any).structure
+        }
       }
-      queryRunner.manager.save([setlistToUpdate, ...songsToUpdate])
-      await queryRunner.commitTransaction()
+      await (setlistToUpdate as any).save()
     } catch (err) {
       // since we have errors lets rollback the changes we made
       console.log(err)
-      await queryRunner.rollbackTransaction()
       throw new HttpException({ err }, HttpStatus.INTERNAL_SERVER_ERROR)
-    } finally {
-      // you need to release a queryRunner which was manually instantiated
-      await queryRunner.release()
     }
 
-    return setlistToUpdate
+    return this.findOne(setlistId)
   }
 
-  async delete(setlistId: number, hardDelete: boolean = false) {
+  async delete(
+    setlistId: string,
+    hardDelete: boolean = false
+  ): Promise<unknown> {
+    if (!Types.ObjectId.isValid(setlistId)) return null
     return hardDelete
-      ? this.setlistSongRepository.delete(setlistId)
-      : this.setlistSongRepository.softDelete(setlistId)
+      ? this.setlistModel.deleteOne({ _id: setlistId }).exec()
+      : this.setlistModel
+          .findByIdAndUpdate(
+            setlistId,
+            { deletedAt: new Date() },
+            { new: true }
+          )
+          .exec()
   }
 }
