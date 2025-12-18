@@ -1,23 +1,42 @@
 {
-  "name": "ui-kit",
-  "private": true,
+  "name": "@praise-app/ui-kit",
+  "private": false,
   "version": "0.0.0",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build && pnpm run build:types",
+    "build:types": "tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "@mantine/core": "^7",
+    "@mantine/hooks": "^7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
+  "dependencies": {},
   "devDependencies": {
     "@chromatic-com/storybook": "^3",
     "@eslint/js": "^9.21.0",
+    "@mantine/core": "^7",
+    "@mantine/hooks": "^7",
     "@storybook/addon-essentials": "^8.6.12",
     "@storybook/addon-onboarding": "^8.6.12",
     "@storybook/blocks": "^8.6.12",
@@ -27,6 +46,8 @@
     "@storybook/test": "^8.6.12",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/browser": "^3.1.1",
     "@vitest/coverage-v8": "^3.1.1",

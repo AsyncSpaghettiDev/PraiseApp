@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router'
 import toast from 'react-hot-toast'
+import { Box, Button, Flex, Input } from '@praise-app/ui-kit'
 
 interface RegisterFormData {
   firstName: string
@@ -51,64 +52,70 @@ export function Register () {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center h-screen'>
-      <Link to='/'>Go Home</Link>
-      <Link to='/login'>Login</Link>
-      <h1 className='text-2xl font-bold text-center'>Register</h1>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className='flex flex-col gap-2 max-w-md mx-auto w-full px-4'
-      >
-        <input
-          type='text'
-          placeholder='First Name'
-          {...register('firstName', { required: 'First name is required' })}
-          className='border border-gray-300 rounded-md p-2'
-        />
-        {errors.firstName && (
-          <span className='text-red-500 text-sm'>{errors.firstName.message}</span>
-        )}
+    <Flex
+      direction='column'
+      align='center'
+      justify='center'
+      style={{ minHeight: '100vh', padding: 16 }}
+    >
+      <Flex gap='md' style={{ marginBottom: 16 }}>
+        <Button component={Link} to='/' variant='subtle'>
+          Go Home
+        </Button>
+        <Button component={Link} to='/login' variant='subtle'>
+          Login
+        </Button>
+      </Flex>
 
-        <input
-          type='text'
-          placeholder='Last Name'
-          {...register('lastName')}
-          className='border border-gray-300 rounded-md p-2'
-        />
+      <Box style={{ width: '100%', maxWidth: 420 }}>
+        <h1 style={{ textAlign: 'center' }}>Register</h1>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Flex direction='column' gap='sm'>
+            <Input
+              type='text'
+              placeholder='First Name'
+              {...register('firstName', { required: 'First name is required' })}
+            />
+            {errors.firstName && (
+              <Box style={{ color: 'red', fontSize: 12 }}>{errors.firstName.message}</Box>
+            )}
 
-        <input
-          type='text'
-          placeholder='Username'
-          {...register('username', { required: 'Username is required' })}
-          className='border border-gray-300 rounded-md p-2'
-        />
-        {errors.username && <span className='text-red-500 text-sm'>{errors.username.message}</span>}
+            <Input type='text' placeholder='Last Name' {...register('lastName')} />
 
-        <input
-          type='password'
-          placeholder='Password'
-          {...register('password', { required: 'Password is required' })}
-          className='border border-gray-300 rounded-md p-2'
-        />
-        {errors.password && <span className='text-red-500 text-sm'>{errors.password.message}</span>}
+            <Input
+              type='text'
+              placeholder='Username'
+              {...register('username', { required: 'Username is required' })}
+            />
+            {errors.username && (
+              <Box style={{ color: 'red', fontSize: 12 }}>{errors.username.message}</Box>
+            )}
 
-        <input
-          type='password'
-          placeholder='Confirm Password'
-          {...register('confirmPassword', {
-            required: 'Please confirm your password',
-            validate: (value) => value === password || 'Passwords do not match'
-          })}
-          className='border border-gray-300 rounded-md p-2'
-        />
-        {errors.confirmPassword && (
-          <span className='text-red-500 text-sm'>{errors.confirmPassword.message}</span>
-        )}
+            <Input
+              type='password'
+              placeholder='Password'
+              {...register('password', { required: 'Password is required' })}
+            />
+            {errors.password && (
+              <Box style={{ color: 'red', fontSize: 12 }}>{errors.password.message}</Box>
+            )}
 
-        <button type='submit' className='bg-blue-500 text-white rounded-md p-2'>
-          Register
-        </button>
-      </form>
-    </div>
+            <Input
+              type='password'
+              placeholder='Confirm Password'
+              {...register('confirmPassword', {
+                required: 'Please confirm your password',
+                validate: (value) => value === password || 'Passwords do not match'
+              })}
+            />
+            {errors.confirmPassword && (
+              <Box style={{ color: 'red', fontSize: 12 }}>{errors.confirmPassword.message}</Box>
+            )}
+
+            <Button type='submit'>Register</Button>
+          </Flex>
+        </form>
+      </Box>
+    </Flex>
   )
 }

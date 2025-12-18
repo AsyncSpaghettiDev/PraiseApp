@@ -1,14 +1,19 @@
 import { Link } from 'react-router'
+import { Box, Flex, Button } from '@praise-app/ui-kit'
 
 export function HomePage () {
   return (
-    <div>
+    <Box p='md'>
       <h1>Home</h1>
-      <div className='flex gap-3'>
-        <Link to='/login'>Login</Link>
+      <Flex gap='md' mt='md'>
+        <Button component={Link} to='/login' variant='light'>
+          Login
+        </Button>
 
-        <Link to='/create-song'>Create Song</Link>
-      </div>
-    </div>
+        <Button component={Link} to='/create-song' variant='light'>
+          Create Song
+        </Button>
+      </Flex>
+    </Box>
   )
 }
