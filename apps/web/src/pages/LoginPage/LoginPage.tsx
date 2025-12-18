@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router'
 import toast from 'react-hot-toast'
 import { Box, Button, Flex, Input } from '@praise-app/ui-kit'
+import { loginRoute } from '../../api/auth/login'
 
 interface LoginFormData {
   username: string
@@ -18,7 +19,7 @@ export function LoginPage () {
 
   const onSubmit = async ({ password, username }: LoginFormData) => {
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(loginRoute, {
         method: 'POST',
         body: JSON.stringify({ username, password }),
         headers: {
