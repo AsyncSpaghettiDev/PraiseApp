@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router'
 import toast from 'react-hot-toast'
 import { Box, Button, Flex, Input } from '@praise-app/ui-kit'
+import { useLoginMutation } from '../../hooks'
 
 interface LoginFormData {
   username: string
@@ -10,6 +11,7 @@ interface LoginFormData {
 
 export function LoginPage () {
   const navigate = useNavigate()
+  const loginMutation = useLoginMutation()
   const {
     register,
     handleSubmit,
@@ -18,25 +20,14 @@ export function LoginPage () {
 
   const onSubmit = async ({ password, username }: LoginFormData) => {
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ username, password }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      const responseData = await response.json()
-      if (response.ok) {
-        window.localStorage.setItem('token', responseData.accessToken)
-        window.localStorage.setItem('refreshToken', responseData.refreshToken)
-        toast.success('Login successful!')
-        navigate('/')
-      } else {
-        toast.error(responseData.message || 'Login failed')
-      }
+      const responseData = await loginMutation.mutateAsync({ username, password })
+      window.localStorage.setItem('token', responseData.accessToken)
+      window.localStorage.setItem('refreshToken', responseData.refreshToken)
+      toast.success('Login successful!')
+      navigate('/')
     } catch (error) {
       console.error(error)
-      toast.error('An error occurred during login')
+      toast.error(error instanceof Error ? error.message : 'An error occurred during login')
     }
   }
 
@@ -78,7 +69,9 @@ export function LoginPage () {
               <Box style={{ color: 'red', fontSize: 12 }}>{errors.password.message}</Box>
             )}
 
-            <Button type='submit'>Login</Button>
+            <Button type='submit' disabled={loginMutation.isPending}>
+              Login
+            </Button>
           </Flex>
         </form>
       </Box>

@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router'
 import toast from 'react-hot-toast'
 import { Box, Button, Flex, Input } from '@praise-app/ui-kit'
+import { useRegisterMutation } from '../../hooks'
 
 interface RegisterFormData {
   firstName: string
@@ -13,6 +14,7 @@ interface RegisterFormData {
 
 export function Register () {
   const navigate = useNavigate()
+  const registerMutation = useRegisterMutation()
   const {
     register,
     handleSubmit,
@@ -24,30 +26,19 @@ export function Register () {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        body: JSON.stringify({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          username: data.username,
-          password: data.password
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
+      const responseData = await registerMutation.mutateAsync({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        username: data.username,
+        password: data.password
       })
-      const responseData = await response.json()
-      if (response.ok) {
-        window.localStorage.setItem('token', responseData.accessToken)
-        window.localStorage.setItem('refreshToken', responseData.refreshToken)
-        toast.success('Registration successful!')
-        navigate('/')
-      } else {
-        toast.error(responseData.message || 'Registration failed')
-      }
+      window.localStorage.setItem('token', responseData.accessToken)
+      window.localStorage.setItem('refreshToken', responseData.refreshToken)
+      toast.success('Registration successful!')
+      navigate('/')
     } catch (error) {
       console.error(error)
-      toast.error('An error occurred during registration')
+      toast.error(error instanceof Error ? error.message : 'An error occurred during registration')
     }
   }
 
@@ -112,7 +103,9 @@ export function Register () {
               <Box style={{ color: 'red', fontSize: 12 }}>{errors.confirmPassword.message}</Box>
             )}
 
-            <Button type='submit'>Register</Button>
+            <Button type='submit' disabled={registerMutation.isPending}>
+              Register
+            </Button>
           </Flex>
         </form>
       </Box>
