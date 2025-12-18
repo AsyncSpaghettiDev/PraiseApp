@@ -2,12 +2,13 @@
   "private": true,
   "license": "UNLICENSED",
   "workspaces": [
-    "praise-app-backend",
-    "praise-app-web"
+    "@praise-app/api",
+    "@praise-app/web",
+    "@praise-app/ui-kit"
   ],
   "scripts": {
-    "dev:web": "pnpm --filter praise-app-web dev",
-    "dev:api": "pnpm --filter praise-app-backend start:dev",
+    "dev:web": "pnpm --filter @praise-app/web dev",
+    "dev:api": "pnpm --filter @praise-app/api start:dev",
     "lint": "eslint . --fix --ext ts,tsx,js,jsx --report-unused-disable-directives --max-warnings 0",
     "prepare": "husky"
   },
