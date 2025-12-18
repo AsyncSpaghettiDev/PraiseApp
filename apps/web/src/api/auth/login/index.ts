@@ -1,3 +1,5 @@
-export const loginRoute = '/api/auth/login' as const
+export const route = '/api/auth/login' as const
 
-export const loginQueryKey = ['auth', 'login'] as const
+export const key = ['auth', 'login'] as const
+
+export { handlers } from './handlers.ts'
