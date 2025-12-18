@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
-import { LoginPage, NotFoundPage, HomePage, Register } from './pages'
+import { LoginPage, NotFoundPage, HomePage, Register, SongsPage, SetlistsPage } from './pages'
 import { RequireAuth } from './components/RequireAuth'
 
 export function App () {
@@ -11,6 +11,22 @@ export function App () {
           element={
             <RequireAuth>
               <HomePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='/songs'
+          element={
+            <RequireAuth>
+              <SongsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='/setlists'
+          element={
+            <RequireAuth>
+              <SetlistsPage />
             </RequireAuth>
           }
         />

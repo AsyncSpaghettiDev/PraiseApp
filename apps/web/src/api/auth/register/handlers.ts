@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw'
-import { route } from './index'
+import { route } from './post'
 
 export const handlers = [
   http.post(route, async ({ request }) => {

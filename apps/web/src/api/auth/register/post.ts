@@ -1,5 +1,6 @@
-import { route } from './index'
+export const route = '/api/auth/register'
 
+export const key = ['auth', 'register']
 export interface RegisterRequest {
   firstName: string
   lastName?: string

@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router'
 import toast from 'react-hot-toast'
-import { Box, Button, Flex, Input } from '@praise-app/ui-kit'
+import { Box, Button, Flex, Input, Title } from '@praise-app/ui-kit'
 import { useRegisterMutation } from '../../hooks'
 
 interface RegisterFormData {
@@ -59,8 +59,10 @@ export function Register () {
       </Flex>
 
       <Box style={{ width: '100%', maxWidth: 420 }}>
-        <h1 style={{ textAlign: 'center' }}>Register</h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <Title order={1} style={{ textAlign: 'center' }}>
+          Register
+        </Title>
+        <Box component='form' onSubmit={handleSubmit(onSubmit)}>
           <Flex direction='column' gap='sm'>
             <Input
               type='text'
@@ -107,7 +109,7 @@ export function Register () {
               Register
             </Button>
           </Flex>
-        </form>
+        </Box>
       </Box>
     </Flex>
   )

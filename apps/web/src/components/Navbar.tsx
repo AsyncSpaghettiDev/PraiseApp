@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router'
-import { Box, Button, Flex } from '@praise-app/ui-kit'
+import { Anchor, Box, Button, Flex } from '@praise-app/ui-kit'
 
 interface NavbarProps {
   appName?: string
@@ -20,21 +20,33 @@ export function Navbar ({ appName = 'Praise App' }: NavbarProps) {
         position: 'sticky',
         top: 0,
         zIndex: 10,
-        background: 'white',
-        borderBottom: '1px solid rgba(0,0,0,0.08)'
+        background: '#0B2B5B',
+        borderBottom: '1px solid rgba(255,255,255,0.15)'
       }}
       p='md'
     >
       <Flex align='center' justify='space-between'>
-        <Box>
-          <Link to='/' style={{ textDecoration: 'none', color: 'inherit', fontWeight: 700 }}>
+        <Flex gap='sm' align='center'>
+          <Anchor
+            component={Link}
+            to='/'
+            style={{ textDecoration: 'none', color: 'white', fontWeight: 700 }}
+          >
             {appName}
-          </Link>
-        </Box>
+          </Anchor>
+          <Button component={Link} to='/songs' variant='light'>
+            Songs
+          </Button>
+          <Button component={Link} to='/setlists' variant='light'>
+            Setlists
+          </Button>
+        </Flex>
 
-        <Button variant='light' onClick={logout}>
-          Logout
-        </Button>
+        <Flex gap='sm' align='center'>
+          <Button variant='filled' onClick={logout}>
+            Logout
+          </Button>
+        </Flex>
       </Flex>
     </Box>
   )

@@ -1,4 +1,6 @@
-import { route } from './index'
+export const route = '/api/auth/login'
+
+export const key = ['auth', 'login']
 
 export interface LoginRequest {
   username: string

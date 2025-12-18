@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { Box, Button, Flex } from '@praise-app/ui-kit'
+import { Box, Button, Flex, Title } from '@praise-app/ui-kit'
 
 export function NotFoundPage () {
   return (
@@ -10,7 +10,7 @@ export function NotFoundPage () {
       style={{ minHeight: '100vh', padding: 16 }}
     >
       <Box style={{ width: '100%', maxWidth: 520, textAlign: 'center' }}>
-        <h1>404 - Page Not Found</h1>
+        <Title order={1}>404 - Page Not Found</Title>
         <Button component={Link} to='/' variant='light'>
           Go Home
         </Button>
