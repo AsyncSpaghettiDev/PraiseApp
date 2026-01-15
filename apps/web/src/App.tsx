@@ -1,5 +1,13 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
-import { LoginPage, NotFoundPage, HomePage, Register, SongsPage, SetlistsPage } from './pages'
+import {
+  LoginPage,
+  NotFoundPage,
+  HomePage,
+  Register,
+  SongsPage,
+  SetlistsPage,
+  SaveSongPage
+} from './pages'
 import { RequireAuth } from './components/RequireAuth'
 
 export function App () {
@@ -19,6 +27,14 @@ export function App () {
           element={
             <RequireAuth>
               <SongsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='/save-song'
+          element={
+            <RequireAuth>
+              <SaveSongPage />
             </RequireAuth>
           }
         />
