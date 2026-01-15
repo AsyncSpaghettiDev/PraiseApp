@@ -1,1 +1,1 @@
-export { Input, type InputProps } from '@mantine/core'
+export { Input, Textarea, NumberInput, Modal, Stack, Group } from '@mantine/core'
