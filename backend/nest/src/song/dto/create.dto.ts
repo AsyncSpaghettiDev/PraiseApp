@@ -17,6 +17,10 @@ export class CreateSongTempo {
   @IsNumber()
   @IsNotEmpty()
   tempo: number
+
+  @IsString()
+  @IsNotEmpty()
+  signature: string
 }
 
 export class CreateSongKey {

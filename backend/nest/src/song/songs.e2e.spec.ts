@@ -8,7 +8,7 @@ function createSongPayload(name: string) {
     style: 'praise',
     artist: 'Tester',
     tags: ['alpha', 'beta'],
-    tempo: [{ variant: 'default', tempo: 120 }],
+    tempo: [{ variant: 'default', tempo: 120, signature: '4/4' }],
     key: [{ variant: 'default', key: 'C' }],
     lyrics: [
       { variant: 'default', lyrics: JSON.stringify({ v1: 'hello world' }) }
@@ -75,7 +75,9 @@ describe('Songs (e2e)', () => {
     const updatePayload = {
       ...createSongPayload('My Song (Updated)'),
       id: songId,
-      tempo: [{ id: tempoId, variant: 'default', tempo: 121 }],
+      tempo: [
+        { id: tempoId, variant: 'default', tempo: 121, signature: '3/4' }
+      ],
       key: [{ id: keyId, variant: 'default', key: 'D' }],
       lyrics: [
         {

@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common'
 import { SongService } from './song.service'
 import { CreateSongDTO } from './dto/create.dto'
+import { ScrapeSongDTO } from './dto/scrape.dto'
 import { SongUpdateId, UpdateSongDTO } from './dto/update.dto'
 
 @Controller('songs')
@@ -42,8 +43,15 @@ export class SongController {
     return this.songService.create(req)
   }
 
+  @Post('scrape')
+  async scrape(@Body() req: ScrapeSongDTO) {
+    const results = await this.songService.scrapeSongBpm(req.query)
+    return { results }
+  }
+
   @Put(':id')
   update(@Param() songId: SongUpdateId, @Body() req: UpdateSongDTO) {
+    console.log(songId)
     return this.songService.update(songId.id, req)
   }
 

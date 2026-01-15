@@ -10,6 +10,9 @@ export class SongTempo {
 
   @Prop({ required: true })
   tempo: number
+
+  @Prop({ required: true })
+  signature: string
 }
 
 export const SongTempoSchema = SchemaFactory.createForClass(SongTempo)

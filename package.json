@@ -9,6 +9,7 @@
   "scripts": {
     "dev:web": "pnpm --filter @praise-app/web dev",
     "dev:api": "pnpm --filter @praise-app/api start:dev",
+    "dev:components": "pnpm --filter @praise-app/ui-kit dev",
     "lint": "eslint . --fix --ext ts,tsx,js,jsx --report-unused-disable-directives --max-warnings 0",
     "prepare": "husky"
   },
@@ -21,7 +22,7 @@
     "pinst": "^3.0.0",
     "prettier": "^3.0.0",
     "standard": "^17.1.0",
-    "typescript": "4.7.4",
+    "typescript": "4.8.4",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "ts-jest": "^29.1.0",

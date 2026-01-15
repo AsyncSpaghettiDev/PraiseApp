@@ -16,7 +16,7 @@ const meta = {
     onLogin: fn(),
     onLogout: fn(),
     onCreateAccount: fn(),
-  },
+  }
 } satisfies Meta<typeof Header>;
 
 export default meta;

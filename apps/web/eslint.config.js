@@ -23,6 +23,7 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      'multiline-ternary': 'off',
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true }

@@ -1,6 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
+import axios from 'axios'
+import * as cheerio from 'cheerio'
 import {
   Song,
   SongDocument,
@@ -10,6 +12,7 @@ import {
   SongTempo
 } from '../schemas/song.schema'
 import { CreateSongDTO } from './dto/create.dto'
+import type { ScrapeSongResult } from './dto/scrape.dto'
 import { UpdateSongDTO } from './dto/update.dto'
 
 export interface SongMetadataIds {
@@ -22,6 +25,90 @@ export interface SongMetadataIds {
 @Injectable()
 export class SongService {
   constructor(@InjectModel(Song.name) private songsModel: Model<Song>) {}
+
+  private normalizeKeyValue(keyValue: string): string {
+    const normalized = (keyValue ?? '')
+      .trim()
+      .replaceAll('♭', 'b')
+      .replaceAll('♯', '#')
+    if (!normalized) return ''
+
+    // Examples observed in the wild: "G", "Bb", "D Minor", "F# Major"
+    return normalized.split(/\s+/)[0]
+  }
+
+  async scrapeSongBpm(query: string): Promise<ScrapeSongResult[]> {
+    const trimmed = (query ?? '').trim()
+    if (!trimmed) return []
+
+    const res = await axios.post(
+      'https://songbpm.com/searches',
+      new URLSearchParams({ query: trimmed }),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Origin: 'https://songbpm.com'
+        },
+        timeout: 15000
+      }
+    )
+
+    const $ = cheerio.load(res.data)
+    const results: ScrapeSongResult[] = []
+
+    $('.bg-card').each((_, el) => {
+      const card = $(el)
+
+      const link = card.find('a').first()
+      const pTags = link.find('p')
+      const artist = pTags.first().text().trim()
+      const title = pTags.eq(1).text().trim()
+
+      const getInfo = (label: string) => {
+        const labelSpan = card
+          .find('span')
+          .filter(
+            (__, s) => $(s).text().trim().toLowerCase() === label.toLowerCase()
+          )
+          .first()
+
+        if (!labelSpan || labelSpan.length === 0) return ''
+
+        const valueSpan = labelSpan.next('span')
+        if (valueSpan && valueSpan.length) return valueSpan.text().trim()
+
+        const parent = labelSpan.parent()
+        const spansInParent = parent.find('span')
+        if (spansInParent.length >= 2)
+          return $(spansInParent.get(1)).text().trim()
+
+        return ''
+      }
+
+      const key = this.normalizeKeyValue(getInfo('Key'))
+      const duration = getInfo('Duration')
+      const bpm = getInfo('BPM')
+      const spotify =
+        card.find('a[href*="open.spotify.com"]').attr('href') || ''
+      const apple = card.find('a[href*="music.apple.com"]').attr('href') || ''
+
+      if (!title && !artist) return
+
+      results.push({
+        title,
+        artist,
+        key,
+        duration,
+        bpm,
+        links: {
+          spotify,
+          apple
+        }
+      })
+    })
+
+    return results
+  }
 
   async listAll(): Promise<SongDocument[]> {
     return await this.songsModel.find().exec()
@@ -133,49 +220,18 @@ export class SongService {
       if (style) songToUpdate.style = style
       if (tags) songToUpdate.tags = tags
 
+      // Replace entire arrays instead of updating by ID
       if (key && key.length > 0) {
-        for (const keyObj of key) {
-          const subdoc = (songToUpdate.key as unknown as SongKey[]).find(
-            (k) => k?._id?.toString?.() === keyObj.id
-          )
-          if (subdoc) {
-            subdoc.variant = keyObj.variant
-            subdoc.key = keyObj.key
-          }
-        }
+        songToUpdate.key = key as unknown as SongKey[]
       }
       if (lyrics && lyrics.length > 0) {
-        for (const lyricsObj of lyrics) {
-          const subdoc = (songToUpdate.lyrics as unknown as SongLyrics[]).find(
-            (l) => l?._id?.toString?.() === lyricsObj.id
-          )
-          if (subdoc) {
-            subdoc.variant = lyricsObj.variant
-            subdoc.lyrics = lyricsObj.lyrics
-          }
-        }
+        songToUpdate.lyrics = lyrics as unknown as SongLyrics[]
       }
       if (structure && structure.length > 0) {
-        for (const structureObj of structure) {
-          const subdoc = (
-            songToUpdate.structure as unknown as SongStructure[]
-          ).find((st) => st?._id?.toString?.() === structureObj.id)
-          if (subdoc) {
-            subdoc.variant = structureObj.variant
-            subdoc.structure = structureObj.structure
-          }
-        }
+        songToUpdate.structure = structure as unknown as SongStructure[]
       }
       if (tempo && tempo.length > 0) {
-        for (const tempoObj of tempo) {
-          const subdoc = (songToUpdate.tempo as unknown as SongTempo[]).find(
-            (t) => t?._id?.toString?.() === tempoObj.id
-          )
-          if (subdoc) {
-            subdoc.variant = tempoObj.variant
-            subdoc.tempo = tempoObj.tempo
-          }
-        }
+        songToUpdate.tempo = tempo as unknown as SongTempo[]
       }
 
       await songToUpdate.save()

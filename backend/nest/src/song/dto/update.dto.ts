@@ -14,29 +14,13 @@ export class SongUpdateId {
   id: string
 }
 
-export class UpdateSongTempo extends CreateSongTempo {
-  @IsNotEmpty()
-  @IsMongoId()
-  id: string
-}
+export class UpdateSongTempo extends CreateSongTempo {}
 
-export class UpdateSongKey extends CreateSongKey {
-  @IsNotEmpty()
-  @IsMongoId()
-  id: string
-}
+export class UpdateSongKey extends CreateSongKey {}
 
-export class UpdateSongLyrics extends CreateSongLyrics {
-  @IsNotEmpty()
-  @IsMongoId()
-  id: string
-}
+export class UpdateSongLyrics extends CreateSongLyrics {}
 
-export class UpdateSongStructure extends CreateSongStructure {
-  @IsNotEmpty()
-  @IsMongoId()
-  id: string
-}
+export class UpdateSongStructure extends CreateSongStructure {}
 
 export class UpdateSongDTO extends CreateSongDTO {
   @ValidateNested({ each: true })
@@ -54,8 +38,4 @@ export class UpdateSongDTO extends CreateSongDTO {
   @ValidateNested({ each: true })
   @Type(() => UpdateSongStructure)
   structure: UpdateSongStructure[]
-
-  @IsNotEmpty()
-  @IsMongoId()
-  id: string
 }
