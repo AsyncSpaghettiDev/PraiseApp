@@ -1,4 +1,4 @@
-import { route } from './index'
+import { route } from './const'
 
 export interface RegisterRequest {
   firstName: string

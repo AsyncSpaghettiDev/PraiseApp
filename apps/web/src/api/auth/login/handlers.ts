@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw'
-import { route } from './index'
+import { route } from './const'
 export const handlers = [
   http.post(route, async ({ request }) => {
     const body = (await request.json().catch(() => null)) as
