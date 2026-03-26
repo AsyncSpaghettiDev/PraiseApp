@@ -67,5 +67,9 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
+  },
+  "dependencies": {
+    "@mantine/dates": "^8.3.18",
+    "dayjs": "^1.11.20"
   }
 }

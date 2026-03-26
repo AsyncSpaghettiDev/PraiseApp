@@ -6,7 +6,8 @@ import {
   Register,
   SongsPage,
   SetlistsPage,
-  SaveSongPage
+  SaveSongPage,
+  SaveSetlistPage
 } from './pages'
 import { RequireAuth } from './components/RequireAuth'
 
@@ -43,6 +44,14 @@ export function App () {
           element={
             <RequireAuth>
               <SetlistsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='/save-setlist'
+          element={
+            <RequireAuth>
+              <SaveSetlistPage />
             </RequireAuth>
           }
         />

@@ -13,6 +13,7 @@ export interface Setlist {
   _id: string
   name: string
   date: string
+  tags: string[]
   songs: SetlistItem[]
 }
 

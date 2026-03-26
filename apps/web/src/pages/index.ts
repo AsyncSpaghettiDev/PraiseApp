@@ -1,3 +1,4 @@
+export * from './SaveSetlistPage/SaveSetlistPage'
 export * from './SaveSongPage/SaveSongPage'
 export * from './HomePage/HomePage'
 export * from './LoginPage/LoginPage'

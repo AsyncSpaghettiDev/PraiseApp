@@ -73,7 +73,7 @@ export const handlers = [
       lyrics: newSong.lyrics || [],
       tempo: newSong.tempo || [],
       key: newSong.key || [],
-      structure: newSong.structure || []
+      structure: (newSong.structure as any) || []
     }
     songs.push(songWithId)
     return HttpResponse.json(songWithId, { status: 201 })
@@ -95,7 +95,7 @@ export const handlers = [
       lyrics: updatedSong.lyrics || [],
       tempo: updatedSong.tempo || [],
       key: updatedSong.key || [],
-      structure: updatedSong.structure || []
+      structure: (updatedSong.structure as any) || []
     }
 
     songs[index] = songWithId

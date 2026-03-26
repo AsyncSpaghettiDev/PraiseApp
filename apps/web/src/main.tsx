@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
 import { App } from './App.tsx'
 import '@mantine/core/styles.css'
+import '@mantine/dates/styles.css'
 import './index.css'
 
 const queryClient = new QueryClient()
