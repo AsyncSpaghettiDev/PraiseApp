@@ -5,6 +5,7 @@ import { Navbar } from '../../components'
 import { SongDetailsModal } from './SongDetailsModal'
 import { useSongsQuery, useDeleteSongMutation } from '../../hooks'
 import { useDebouncedValue } from '@mantine/hooks'
+import { IconMusic } from '@tabler/icons-react'
 
 export function SongsPage () {
   const songsQuery = useSongsQuery()
@@ -89,7 +90,7 @@ export function SongsPage () {
             <Title order={1} m={0}>
               Songs
             </Title>
-            <Button component={Link} to='/create-song' variant='light'>
+            <Button component={Link} to='/save-song' variant='light'>
               Create Song
             </Button>
           </Flex>
@@ -111,7 +112,7 @@ export function SongsPage () {
             <Title order={1} m={0}>
               Songs
             </Title>
-            <Button component={Link} to='/create-song' variant='light'>
+            <Button component={Link} to='/save-song' variant='light'>
               Create Song
             </Button>
           </Flex>
@@ -138,7 +139,7 @@ export function SongsPage () {
             <Title order={1} m={0}>
               Songs
             </Title>
-            <Button component={Link} to='/create-song' variant='light'>
+            <Button component={Link} to='/save-song' variant='light'>
               Create Song
             </Button>
           </Flex>
@@ -176,44 +177,121 @@ export function SongsPage () {
           mt='md'
         />
 
-        <Flex direction='column' gap='sm' mt='md'>
-          {filteredSongs.length === 0 ? (
-            <Paper p='md' radius='md' withBorder>
+        {filteredSongs.length === 0
+          ? (
+            <Paper mt='md' p='md' radius='md' withBorder>
               <Text c='dimmed'>No songs found matching your search.</Text>
             </Paper>
-          ) : (
-            filteredSongs.map((song) => (
-              <Paper
-                key={song._id}
-                p='md'
-                radius='md'
-                withBorder
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleSongClick(song)}
-              >
-                <Flex align='center' justify='space-between' gap='md'>
+            )
+          : (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                gap: '1rem',
+                marginTop: '1rem'
+              }}
+            >
+              {filteredSongs.map((song) => (
+                <Paper
+                  key={song._id}
+                  p='md'
+                  radius='md'
+                  withBorder
+                  style={{
+                    cursor: 'pointer',
+                    transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    aspectRatio: '1 / 1',
+                    justifyContent: 'space-between'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)'
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = 'none'
+                  }}
+                  onClick={() => handleSongClick(song)}
+                >
                   <Box>
-                    <Title order={4} m={0}>
+                    <Flex align='center' gap={8} mb='xs'>
+                      <Box
+                        p={6}
+                        bg='var(--mantine-color-blue-0)'
+                        style={{
+                          borderRadius: 'var(--mantine-radius-sm)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        <IconMusic size={18} color='var(--mantine-color-blue-6)' />
+                      </Box>
+                      <Text
+                        size='xs'
+                        fw={600}
+                        c='blue'
+                        tt='uppercase'
+                        style={{ letterSpacing: '0.5px' }}
+                      >
+                        {song.style || 'Song'}
+                      </Text>
+                    </Flex>
+
+                    <Title order={4} m={0} lineClamp={2}>
                       {song.name}
                     </Title>
-                    <Text c='dimmed' size='sm'>
+                    <Text c='dimmed' size='sm' mt={4} lineClamp={1}>
                       {song.artist}
                     </Text>
-                    {song.tags.length > 0 && (
-                      <Text c='dimmed' size='sm' mt='xs'>
-                        Tags: {song.tags.join(', ')}
-                      </Text>
-                    )}
                   </Box>
 
-                  <Text c='dimmed' size='sm'>
-                    {/* Key: {song.key} • BPM: {song.tempo} */}
-                  </Text>
-                </Flex>
-              </Paper>
-            ))
-          )}
-        </Flex>
+                  <Box>
+                    {song.tags.length > 0 && (
+                      <Flex gap={4} wrap='wrap' mt='sm'>
+                        {song.tags.slice(0, 3).map((tag, index) => (
+                          <Text
+                            key={index}
+                            size='xs'
+                            px={6}
+                            py={2}
+                            bg='var(--mantine-color-gray-0)'
+                            style={{
+                              borderRadius: 'var(--mantine-radius-sm)',
+                              border: '1px solid var(--mantine-color-gray-3)'
+                            }}
+                          >
+                            {tag}
+                          </Text>
+                        ))}
+                        {song.tags.length > 3 && (
+                          <Text size='xs' c='dimmed' py={2}>
+                            +{song.tags.length - 3}
+                          </Text>
+                        )}
+                      </Flex>
+                    )}
+
+                    <Flex gap='md' mt='sm'>
+                      {song.tempo.length > 0 && (
+                        <Text size='xs' c='dimmed'>
+                          {song.tempo[0].tempo} BPM
+                        </Text>
+                      )}
+                      {song.key.length > 0 && (
+                        <Text size='xs' c='dimmed'>
+                          Key: {song.key[0].key}
+                        </Text>
+                      )}
+                    </Flex>
+                  </Box>
+                </Paper>
+              ))}
+            </div>
+            )}
       </Box>
 
       {/* Song Details Modal */}

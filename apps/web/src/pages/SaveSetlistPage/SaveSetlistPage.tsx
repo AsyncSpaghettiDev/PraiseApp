@@ -58,7 +58,7 @@ export function SaveSetlistPage () {
 
   const generateNameFromDate = (dateVal: Date | null) => {
     if (!dateVal) return ''
-    const generated = dayjs(dateVal).format('dddd DD/MM/YY')
+    const generated = dayjs(dateVal).format('dddd DD/MMMM/YY')
     return generated.charAt(0).toUpperCase() + generated.slice(1)
   }
 
@@ -250,30 +250,30 @@ export function SaveSetlistPage () {
 
                   {watch('songs').length === 0
                     ? (
-                    <Text c="dimmed" size="sm">No songs added yet.</Text>
+                      <Text c="dimmed" size="sm">No songs added yet.</Text>
                       )
                     : (
-                    <Flex direction="column" gap="xs">
-                      {watch('songs').map((song, index) => (
-                        <Paper key={index} p="sm" withBorder radius="md">
-                          <Flex align="center" justify="space-between">
-                            <Box>
-                              <Text fw={500}>{song.name}</Text>
-                              <Text size="sm" c="dimmed">
-                                Tempo: {song.tempo.tempo} BPM ({song.tempo.variant}) • Key: {song.key.key} ({song.key.variant})
-                              </Text>
-                            </Box>
-                            <ActionIcon
-                              color="red"
-                              variant="light"
-                              onClick={() => removeSong(index)}
-                            >
-                              <IconX size={16} />
-                            </ActionIcon>
-                          </Flex>
-                        </Paper>
-                      ))}
-                    </Flex>
+                      <Flex direction="column" gap="xs">
+                        {watch('songs').map((song, index) => (
+                          <Paper key={index} p="sm" withBorder radius="md">
+                            <Flex align="center" justify="space-between">
+                              <Box>
+                                <Text fw={500}>{song.name}</Text>
+                                <Text size="sm" c="dimmed">
+                                  Tempo: {song.tempo.tempo} BPM ({song.tempo.variant}) • Key: {song.key.key} ({song.key.variant})
+                                </Text>
+                              </Box>
+                              <ActionIcon
+                                color="red"
+                                variant="light"
+                                onClick={() => removeSong(index)}
+                              >
+                                <IconX size={16} />
+                              </ActionIcon>
+                            </Flex>
+                          </Paper>
+                        ))}
+                      </Flex>
                       )}
                 </Flex>
 

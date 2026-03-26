@@ -1,4 +1,4 @@
-import { Combobox, InputBase, useCombobox } from '@mantine/core'
+import { Combobox, InputBase, useCombobox, ScrollArea } from '@mantine/core'
 import { useEffect, useMemo, useState } from 'react'
 
 export interface SelectCreatableProps {
@@ -108,12 +108,14 @@ export function SelectCreatable ({
       </Combobox.Target>
 
       <Combobox.Dropdown>
-        <Combobox.Options>
-          {options}
-          {!exactOptionMatch && search.trim().length > 0 && (
-            <Combobox.Option value='$create'>+ Create {search}</Combobox.Option>
-          )}
-        </Combobox.Options>
+        <ScrollArea.Autosize type="scroll" mah={250}>
+          <Combobox.Options>
+            {options}
+            {!exactOptionMatch && search.trim().length > 0 && (
+              <Combobox.Option value='$create'>+ Create {search}</Combobox.Option>
+            )}
+          </Combobox.Options>
+        </ScrollArea.Autosize>
       </Combobox.Dropdown>
     </Combobox>
   )
