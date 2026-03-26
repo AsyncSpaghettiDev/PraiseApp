@@ -1,21 +1,10 @@
-export const route = '/api/setlist'
+import { route } from './const'
+import type { SetlistResponse, SetlistItem } from '@praise-app/types'
 
-export const key = ['setlists'] as const
+export const key = ['setlists', 'get'] as const
 
-export interface SetlistItem {
-  _id: string
-  name: string
-  artist: string
-  style: string
-}
-
-export interface Setlist {
-  _id: string
-  name: string
-  date: string
-  tags: string[]
-  songs: SetlistItem[]
-}
+export type Setlist = SetlistResponse
+export type { SetlistItem }
 
 export async function getSetlists (): Promise<Setlist[]> {
   const response = await fetch(route)

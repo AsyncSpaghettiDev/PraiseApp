@@ -9,8 +9,17 @@ import {
   IsString,
   ValidateNested
 } from 'class-validator'
+import type {
+  SongTempo,
+  SongKey,
+  SongLyrics,
+  SongStructure,
+  SetlistSongRequest,
+  CreateSetlistRequest,
+  UpdateSetlistRequest
+} from '@praise-app/types'
 
-export class CreateSongTempoDTO {
+export class CreateSongTempoDTO implements SongTempo {
   @IsNotEmpty()
   @IsString()
   variant: string
@@ -18,9 +27,13 @@ export class CreateSongTempoDTO {
   @IsNotEmpty()
   @IsNumber()
   tempo: number
+
+  @IsNotEmpty()
+  @IsString()
+  signature: string
 }
 
-export class CreateSongKeyDTO {
+export class CreateSongKeyDTO implements SongKey {
   @IsNotEmpty()
   @IsString()
   variant: string
@@ -30,7 +43,7 @@ export class CreateSongKeyDTO {
   key: string
 }
 
-export class CreateSongLyricsDTO {
+export class CreateSongLyricsDTO implements SongLyrics {
   @IsNotEmpty()
   @IsString()
   variant: string
@@ -40,17 +53,18 @@ export class CreateSongLyricsDTO {
   lyrics: string
 }
 
-export class CreateSongStructureDTO {
+export class CreateSongStructureDTO implements SongStructure {
   @IsNotEmpty()
   @IsString()
   variant: string
 
   @IsNotEmpty()
-  @IsString()
-  structure: string
+  @IsArray()
+  @IsString({ each: true })
+  structure: string[]
 }
 
-export class CreateSetlistSongDTO {
+export class CreateSetlistSongDTO implements SetlistSongRequest {
   @IsNotEmpty()
   @IsString()
   name: string
@@ -90,7 +104,7 @@ export class SetlistId {
   id: string
 }
 
-export class CreateSetlistDTO {
+export class CreateSetlistDTO implements CreateSetlistRequest {
   @IsNotEmpty()
   @IsString()
   name: string
@@ -117,7 +131,10 @@ export class UpdateSetlistSongDTO extends CreateSetlistSongDTO {
   id: string
 }
 
-export class UpdateSetlistDTO extends CreateSetlistDTO {
+export class UpdateSetlistDTO
+  extends CreateSetlistDTO
+  implements UpdateSetlistRequest
+{
   @IsNotEmpty()
   @IsMongoId()
   id: string

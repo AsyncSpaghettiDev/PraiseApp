@@ -67,7 +67,7 @@ export function AddSongModal ({ opened, onClose, onAdd }: AddSongModalProps) {
         },
         structure: {
           variant: structureInfo.variant,
-          structure: typeof structureInfo.structure === 'string' ? structureInfo.structure : JSON.stringify(structureInfo.structure)
+          structure: structureInfo.structure
         }
       })
       handleClose()

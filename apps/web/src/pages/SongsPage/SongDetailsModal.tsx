@@ -165,9 +165,7 @@ export function SongDetailsModal ({
                 {structure.variant}
               </Text>
               <Text size='sm' c='dimmed'>
-                {typeof structure.structure === 'string'
-                  ? JSON.parse(structure.structure).join(', ')
-                  : structure.structure.join(', ')}
+                {Array.isArray(structure.structure) ? structure.structure.join(', ') : structure.structure}
               </Text>
             </Box>
           ))}

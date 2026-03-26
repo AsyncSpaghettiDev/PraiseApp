@@ -1,50 +1,8 @@
+import type { UpdateSongRequest, SongResponse as UpdateSongResponse } from '@praise-app/types'
+
 export const route = '/api/songs'
 
-export interface UpdateSongTempo {
-  variant: string
-  signature: string
-  tempo: number
-}
-
-export interface UpdateSongKey {
-  variant: string
-  key: string
-}
-
-export interface UpdateSongLyrics {
-  variant: string
-  lyrics: string
-}
-
-export interface UpdateSongStructure {
-  variant: string
-  structure: string
-}
-
-export interface UpdateSongRequest {
-  name: string
-  style: 'praise' | 'worship'
-  artist: string
-  tags: string[]
-  tempo: UpdateSongTempo[]
-  key: UpdateSongKey[]
-  lyrics: UpdateSongLyrics[]
-  structure: UpdateSongStructure[]
-}
-
-export interface UpdateSongResponse {
-  _id: string
-  name: string
-  style: 'praise' | 'worship'
-  artist: string
-  tags: string[]
-  tempo: UpdateSongTempo[]
-  key: UpdateSongKey[]
-  lyrics: UpdateSongLyrics[]
-  structure: UpdateSongStructure[]
-  createdAt: string
-  updatedAt: string
-}
+export type { UpdateSongRequest, UpdateSongResponse }
 
 export async function updateSong (id: string, data: UpdateSongRequest): Promise<UpdateSongResponse> {
   const response = await fetch(`${route}/${id}`, {

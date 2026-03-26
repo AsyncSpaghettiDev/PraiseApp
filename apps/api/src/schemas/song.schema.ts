@@ -50,8 +50,8 @@ export class SongStructure {
   @Prop({ required: true })
   variant: string
 
-  @Prop({ required: true })
-  structure: string
+  @Prop({ required: true, type: [String] })
+  structure: string[]
 }
 
 export const SongStructureSchema = SchemaFactory.createForClass(SongStructure)

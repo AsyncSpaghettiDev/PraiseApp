@@ -472,11 +472,11 @@ export function SaveSongPage () {
             : [{ variant: 'default', lyrics: JSON.stringify({}) }],
         structure:
           data.structure.length > 0
-            ? data.structure.map((item) => ({ ...item, structure: JSON.stringify(item.structure) }))
+            ? data.structure
             : [
                 {
                   variant: 'default',
-                  structure: JSON.stringify(['intro', 'verse', 'chorus', 'bridge', 'outro'])
+                  structure: ['intro', 'verse', 'chorus', 'bridge', 'outro']
                 }
               ]
       }

@@ -1,4 +1,6 @@
-import { route } from './get'
+import { route } from './const'
+
+export const key = ['setlists', 'delete'] as const
 
 export async function deleteSetlist (id: string, permanent: boolean = false): Promise<{ message: string }> {
   const url = permanent ? `${route}/remove/${id}` : `${route}/archive/${id}`

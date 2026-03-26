@@ -1,14 +1,8 @@
 import { route } from './const'
+import type { LoginRequest, LoginResponse } from '@praise-app/types'
 
-export interface LoginRequest {
-  username: string
-  password: string
-}
-
-export interface LoginResponse {
-  accessToken: string
-  refreshToken: string
-}
+export type { LoginRequest, LoginResponse }
+export const key = ['auth', 'login', 'post'] as const
 
 export async function postLogin (payload: LoginRequest): Promise<LoginResponse> {
   const response = await fetch(route, {

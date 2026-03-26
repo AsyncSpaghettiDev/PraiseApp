@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
-import { route, type Song } from './get'
-import { type SaveSongRequest } from './post'
+import { route } from './get'
+import type { CreateSongRequest as SaveSongRequest, SongResponse as Song } from '@praise-app/types'
 import { route as scrapeRoute, type ScrapeSongRequest } from './scrape/post'
 
 const songs: Song[] = [

@@ -1,17 +1,8 @@
 import { route } from './const'
+import type { RegisterRequest, RegisterResponse } from '@praise-app/types'
 
-export const key = ['auth', 'register']
-export interface RegisterRequest {
-  firstName: string
-  lastName?: string
-  username: string
-  password: string
-}
-
-export interface RegisterResponse {
-  accessToken: string
-  refreshToken: string
-}
+export type { RegisterRequest, RegisterResponse }
+export const key = ['auth', 'register', 'post'] as const
 
 export async function postRegister (payload: RegisterRequest): Promise<RegisterResponse> {
   const response = await fetch(route, {

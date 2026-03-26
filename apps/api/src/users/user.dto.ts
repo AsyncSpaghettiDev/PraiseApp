@@ -1,8 +1,9 @@
 import { PartialType } from '@nestjs/mapped-types'
 
 import { IsString, IsNotEmpty } from 'class-validator'
+import type { CreateUser } from '@praise-app/types'
 
-export class CreateUserDTO {
+export class CreateUserDTO implements CreateUser {
   @IsString()
   @IsNotEmpty()
   readonly firstName: string

@@ -7,6 +7,7 @@ import {
   CreateSongTempo
 } from './create.dto'
 import { Type } from 'class-transformer'
+import type { UpdateSongRequest } from '@praise-app/types'
 
 export class SongUpdateId {
   @IsNotEmpty()
@@ -22,7 +23,7 @@ export class UpdateSongLyrics extends CreateSongLyrics {}
 
 export class UpdateSongStructure extends CreateSongStructure {}
 
-export class UpdateSongDTO extends CreateSongDTO {
+export class UpdateSongDTO extends CreateSongDTO implements UpdateSongRequest {
   @ValidateNested({ each: true })
   @Type(() => UpdateSongTempo)
   tempo: UpdateSongTempo[]

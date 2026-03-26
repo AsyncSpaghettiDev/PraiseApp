@@ -183,16 +183,8 @@ export function SetlistDetailsModal ({
                             </Text>
                             <Text size='sm' c='dimmed'>
                               {(() => {
-                                try {
-                                  const struct = typeof song.structure.structure === 'string'
-                                    ? JSON.parse(song.structure.structure)
-                                    : song.structure.structure
-                                  return Array.isArray(struct) ? struct.join(' → ') : struct
-                                } catch {
-                                  return typeof song.structure.structure === 'string'
-                                    ? song.structure.structure
-                                    : ''
-                                }
+                                const struct = song.structure.structure
+                                return Array.isArray(struct) ? struct.join(' → ') : struct
                               })()}
                             </Text>
                           </Box>

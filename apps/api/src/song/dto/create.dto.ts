@@ -8,8 +8,15 @@ import {
   IsJSON,
   IsArray
 } from 'class-validator'
+import type {
+  SongTempo,
+  SongKey,
+  SongLyrics,
+  SongStructure,
+  CreateSongRequest
+} from '@praise-app/types'
 
-export class CreateSongTempo {
+export class CreateSongTempo implements SongTempo {
   @IsString()
   @IsNotEmpty()
   variant: string
@@ -23,7 +30,7 @@ export class CreateSongTempo {
   signature: string
 }
 
-export class CreateSongKey {
+export class CreateSongKey implements SongKey {
   @IsString()
   @IsNotEmpty()
   variant: string
@@ -33,7 +40,7 @@ export class CreateSongKey {
   key: string
 }
 
-export class CreateSongLyrics {
+export class CreateSongLyrics implements SongLyrics {
   @IsString()
   @IsNotEmpty()
   variant: string
@@ -44,18 +51,18 @@ export class CreateSongLyrics {
   lyrics: string
 }
 
-export class CreateSongStructure {
+export class CreateSongStructure implements SongStructure {
   @IsString()
   @IsNotEmpty()
   variant: string
 
-  @IsString()
-  @IsJSON()
+  @IsArray()
+  @IsString({ each: true })
   @IsNotEmpty()
-  structure: string
+  structure: string[]
 }
 
-export class CreateSongDTO {
+export class CreateSongDTO implements CreateSongRequest {
   @IsString()
   @IsNotEmpty()
   name: string
