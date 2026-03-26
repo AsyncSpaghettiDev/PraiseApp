@@ -1,6 +1,4 @@
-export const route = '/api/auth/login'
-
-export const key = ['auth', 'login']
+import { route } from './const'
 
 export interface LoginRequest {
   username: string

@@ -1,4 +1,4 @@
-export const route = '/api/auth/register'
+import { route } from './const'
 
 export const key = ['auth', 'register']
 export interface RegisterRequest {
